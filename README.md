@@ -1,4 +1,4 @@
-# PostCSS Image Set [![Build Status](https://travis-ci.org/Alex499/postcss-image-set.svg)](https://travis-ci.org/Alex499/postcss-image-set)
+# postcss-image-set [![Build Status](https://travis-ci.org/Alex499/postcss-image-set.svg)](https://travis-ci.org/Alex499/postcss-image-set)
 
 [PostCSS] plugin for fallback image-set.
 
