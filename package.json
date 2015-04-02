@@ -1,0 +1,24 @@
+{
+    "name": "postcss-image-set",
+    "version": "0.0.1",
+    "description": "PostCSS plugin for fallback image-set",
+    "keywords": ["postcss", "css", "postcssplugin", "image-set"],
+    "author": "Alex <alex.zx0@gmail.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url":  "https://github.com/Alex499/postcss-image-set.git"
+    },
+    "dependencies": {
+        "postcss": "^4.1.0"
+    },
+    "devDependencies": {
+        "gulp-eslint": "0.8.0",
+        "gulp-mocha":  "2.0.1",
+        "chai":        "2.2.0",
+        "gulp":        "3.8.11"
+    },
+    "scripts": {
+        "test": "gulp"
+    }
+}
