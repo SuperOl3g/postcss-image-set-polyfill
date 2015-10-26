@@ -10,58 +10,82 @@ var test = function (input, output, opts, done) {
 
 describe('postcss-image-set', function () {
     it('parses the image-set', function (done) {
-        test('a{ background-image: image-set(' +
-                                'url(img/test.png) 1x, ' +
-                                'url(img/test-2x.png) 2x, ' +
-                                'url(img/my-img-print.png) 600dpi); }',
-      'a{ background-image: url(img/test.png); ' +
-        'background-image: image-set(' +
-                                'url(img/test.png) 1x, ' +
-                                'url(img/test-2x.png) 2x, ' +
-                                'url(img/my-img-print.png) 600dpi); }\n' +
-      '@media (screen and min-resolution: 2dppx){\n ' +
-        'a{ ' +
-        'background-image: url(img/test-2x.png);' +
-        'background-image: image-set(' +
-                                'url(img/test.png) 1x, ' +
-                                'url(img/test-2x.png) 2x, ' +
-                                'url(img/my-img-print.png) 600dpi); }' +
-      '}\n'+
-      '@media (screen and min-resolution: 600dpi){\n ' +
-        'a {' +
-        'background-image: url(img/my-img-print.png);' +
-        'background-image: image-set(' +
-                                'url(img/test.png) 1x, ' +
-                                'url(img/test-2x.png) 2x, ' +
-                                'url(img/my-img-print.png) 600dpi); }' +
-      '}', { }, done);
+        test(
+            'a{' +
+                'background-image: image-set(' +
+                    'url(img/test.png) 1x, ' +
+                    'url(img/test-2x.png) 2x, ' +
+                    'url(img/my-img-print.png) 600dpi' +
+                ');' +
+            '}',
+            'a{' +
+                'background-image: url(img/test.png); ' +
+                'background-image: image-set(' +
+                    'url(img/test.png) 1x, ' +
+                    'url(img/test-2x.png) 2x, ' +
+                    'url(img/my-img-print.png) 600dpi' +
+                ');' +
+            '}' +
+            '@media (screen and min-resolution: 2dppx){' +
+                'a{' +
+                    'background-image: url(img/test-2x.png);' +
+                    'background-image: image-set(' +
+                        'url(img/test.png) 1x, ' +
+                        'url(img/test-2x.png) 2x, ' +
+                        'url(img/my-img-print.png) 600dpi' +
+                    ');' +
+                '}' +
+            '}'+
+            '@media (screen and min-resolution: 600dpi){' +
+                'a{' +
+                    'background-image: url(img/my-img-print.png);' +
+                    'background-image: image-set(' +
+                        'url(img/test.png) 1x, ' +
+                        'url(img/test-2x.png) 2x, ' +
+                        'url(img/my-img-print.png) 600dpi' +
+                    ');'+
+                '}' +
+            '}',
+            { }, done);
     });
 
     it('parses the -webkit-image-set', function (done) {
-        test('a{ background-image: -webkit-image-set(' +
-                                'url(img/test.png) 1x, ' +
-                                'url(img/test-2x.png) 2x, ' +
-                                'url(img/my-img-print.png) 600dpi); }',
-      'a{ background-image: url(img/test.png); ' +
-        'background-image: -webkit-image-set(' +
-                                'url(img/test.png) 1x, ' +
-                                'url(img/test-2x.png) 2x, ' +
-                                'url(img/my-img-print.png) 600dpi); }\n' +
-      '@media (screen and min-resolution: 2dppx){\n ' +
-        'a{ ' +
-        'background-image: url(img/test-2x.png);' +
-        'background-image: -webkit-image-set(' +
-                                'url(img/test.png) 1x, ' +
-                                'url(img/test-2x.png) 2x, ' +
-                                'url(img/my-img-print.png) 600dpi); }' +
-      '}\n'+
-      '@media (screen and min-resolution: 600dpi){\n ' +
-        'a {' +
-        'background-image: url(img/my-img-print.png);' +
-        'background-image: -webkit-image-set(' +
-                                'url(img/test.png) 1x, ' +
-                                'url(img/test-2x.png) 2x, ' +
-                                'url(img/my-img-print.png) 600dpi); }' +
-      '}', { }, done);
+        test(
+            'a{' +
+                'background-image: -webkit-image-set(' +
+                    'url(img/test.png) 1x, ' +
+                    'url(img/test-2x.png) 2x, ' +
+                    'url(img/my-img-print.png) 600dpi' +
+                ');' +
+            '}',
+            'a{' +
+                'background-image: url(img/test.png); ' +
+                'background-image: -webkit-image-set(' +
+                    'url(img/test.png) 1x, ' +
+                    'url(img/test-2x.png) 2x, ' +
+                    'url(img/my-img-print.png) 600dpi' +
+                ');' +
+            '}' +
+            '@media (screen and min-resolution: 2dppx){' +
+                'a{' +
+                    'background-image: url(img/test-2x.png);' +
+                    'background-image: -webkit-image-set(' +
+                        'url(img/test.png) 1x, ' +
+                        'url(img/test-2x.png) 2x, ' +
+                        'url(img/my-img-print.png) 600dpi' +
+                    ');' +
+                '}' +
+            '}'+
+            '@media (screen and min-resolution: 600dpi){' +
+                'a{' +
+                    'background-image: url(img/my-img-print.png);' +
+                    'background-image: -webkit-image-set(' +
+                        'url(img/test.png) 1x, ' +
+                        'url(img/test-2x.png) 2x, ' +
+                        'url(img/my-img-print.png) 600dpi' +
+                    ');'+
+                '}' +
+            '}',
+            { }, done);
     });
 });

@@ -20,16 +20,17 @@ var extractUrl = function (image) {
     return postcss.list.space(image)[0];
 };
 
+// split url and size
 var split = function (image) {
     return {
-        size: extractSize(image)
-  , url:  extractUrl(image)
-    }
+      size: extractSize(image)
+    , url:  extractUrl(image)
+    };
 };
 
 // get the default image
 var getDefault = function (images) {
-    var img = images.filter(function (image) { image.size === '1x' })[0];
+    var img = images.filter(function (image) { return image.size === '1x'; })[0];
     if ( !img ) {
         // just use first image
         return images[0];
@@ -56,6 +57,7 @@ module.exports = postcss.plugin('postcss-image-set', function (opts) {
     return function (css) {
         css.walkDecls('background-image', function (decl) {
 
+            // ignore nodes we already visited
             if ( decl.__visited ) {
                 return;
             }
@@ -79,29 +81,27 @@ module.exports = postcss.plugin('postcss-image-set', function (opts) {
 
             // for each image add a media query
             images
-            .filter(function (image) { return image.size !== '1x' })
-            .forEach(function(image) {
+            .filter(function (img) { return img.size !== '1x'; })
+            .forEach(function(img) {
                 var atrule = postcss.atRule({
-                    name: 'media'
-                    , params: '(screen and min-resolution: ' + sizeToResolution(image.size) + ')'
+                    name: 'media',
+                    params: '(screen and min-resolution: ' + sizeToResolution(img.size) + ')'
                 });
 
 
                 // clone empty parent with only relevant decls
                 var parent = decl.parent.clone({
-                    nodes: [
-                    ]
+                    nodes: []
                 });
 
-                var d  = decl.clone({ value: image.url });
+                var d  = decl.clone({ value: img.url });
                 var dd = decl.clone();
+
+                // mark nodes as visited by us
                 d.__visited  = true;
                 dd.__visited = true;
 
-                parent.append(
-                    d
-                    , dd
-                );
+                parent.append(d, dd);
                 atrule.append(parent);
 
                 decl.root().append(atrule);
