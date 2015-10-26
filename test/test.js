@@ -15,7 +15,7 @@ describe('postcss-image-set', function () {
                 'background-image: image-set(' +
                     'url(img/test.png) 1x, ' +
                     'url(img/test-2x.png) 2x, ' +
-                    'url(img/my-img-print.png) 600dpi' +
+                    'url(my-img-print.png) 600dpi' +
                 ');' +
             '}',
             'a{' +
@@ -23,7 +23,7 @@ describe('postcss-image-set', function () {
                 'background-image: image-set(' +
                     'url(img/test.png) 1x, ' +
                     'url(img/test-2x.png) 2x, ' +
-                    'url(img/my-img-print.png) 600dpi' +
+                    'url(my-img-print.png) 600dpi' +
                 ');' +
             '}' +
             '@media (screen and min-resolution: 2dppx){' +
@@ -32,17 +32,17 @@ describe('postcss-image-set', function () {
                     'background-image: image-set(' +
                         'url(img/test.png) 1x, ' +
                         'url(img/test-2x.png) 2x, ' +
-                        'url(img/my-img-print.png) 600dpi' +
+                        'url(my-img-print.png) 600dpi' +
                     ');' +
                 '}' +
             '}'+
             '@media (screen and min-resolution: 600dpi){' +
                 'a{' +
-                    'background-image: url(img/my-img-print.png);' +
+                    'background-image: url(my-img-print.png);' +
                     'background-image: image-set(' +
                         'url(img/test.png) 1x, ' +
                         'url(img/test-2x.png) 2x, ' +
-                        'url(img/my-img-print.png) 600dpi' +
+                        'url(my-img-print.png) 600dpi' +
                     ');'+
                 '}' +
             '}',
@@ -55,7 +55,7 @@ describe('postcss-image-set', function () {
                 'background-image: -webkit-image-set(' +
                     'url(img/test.png) 1x, ' +
                     'url(img/test-2x.png) 2x, ' +
-                    'url(img/my-img-print.png) 600dpi' +
+                    'url(my-img-print.png) 600dpi' +
                 ');' +
             '}',
             'a{' +
@@ -63,7 +63,7 @@ describe('postcss-image-set', function () {
                 'background-image: -webkit-image-set(' +
                     'url(img/test.png) 1x, ' +
                     'url(img/test-2x.png) 2x, ' +
-                    'url(img/my-img-print.png) 600dpi' +
+                    'url(my-img-print.png) 600dpi' +
                 ');' +
             '}' +
             '@media (screen and min-resolution: 2dppx){' +
@@ -72,17 +72,17 @@ describe('postcss-image-set', function () {
                     'background-image: -webkit-image-set(' +
                         'url(img/test.png) 1x, ' +
                         'url(img/test-2x.png) 2x, ' +
-                        'url(img/my-img-print.png) 600dpi' +
+                        'url(my-img-print.png) 600dpi' +
                     ');' +
                 '}' +
             '}'+
             '@media (screen and min-resolution: 600dpi){' +
                 'a{' +
-                    'background-image: url(img/my-img-print.png);' +
+                    'background-image: url(my-img-print.png);' +
                     'background-image: -webkit-image-set(' +
                         'url(img/test.png) 1x, ' +
                         'url(img/test-2x.png) 2x, ' +
-                        'url(img/my-img-print.png) 600dpi' +
+                        'url(my-img-print.png) 600dpi' +
                     ');'+
                 '}' +
             '}',
