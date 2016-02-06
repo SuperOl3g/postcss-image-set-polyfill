@@ -21,10 +21,9 @@ var extractSize = function (image) {
 var extractUrl = function (image) {
     var url = postcss.list.space(image)[0];
     if ( url.match(/url\(/) || url.match(/image\(/) ) {
-      return url;
+        return url;
     } else {
-
-      return "url(" + url + ")";
+        return 'url(' + url + ')';
     }
 };
 
