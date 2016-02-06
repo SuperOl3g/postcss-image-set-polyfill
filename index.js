@@ -2,7 +2,9 @@ var postcss = require('postcss');
 
 // get the list of images
 var extractList = function (decl) {
-    return postcss.list.comma(decl.value.match(/image-set\((.+)\)/)[1]);
+    var stripped = decl.value.replace(/(\r\n|\n)/g, '');
+    var inside   = stripped.match(/image-set\(([\s\S]+)\)/)[1];
+    return postcss.list.comma(inside);
 };
 
 // get the size of image
@@ -17,7 +19,13 @@ var extractSize = function (image) {
 
 // get the url of an image
 var extractUrl = function (image) {
-    return postcss.list.space(image)[0];
+    const url = postcss.list.space(image)[0];
+    if ( url.match(/url\(/) || url.match(/image\(/) ) {
+      return url;
+    } else {
+
+      return "url(" + url + ")";
+    }
 };
 
 // split url and size
