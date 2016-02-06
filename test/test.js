@@ -1,3 +1,4 @@
+/* eslint-disable space-infix-ops */
 var expect  = require('chai').expect;
 
 var postcss = require('postcss');
