@@ -19,7 +19,7 @@ var extractSize = function (image) {
 
 // get the url of an image
 var extractUrl = function (image) {
-    const url = postcss.list.space(image)[0];
+    var url = postcss.list.space(image)[0];
     if ( url.match(/url\(/) || url.match(/image\(/) ) {
       return url;
     } else {
