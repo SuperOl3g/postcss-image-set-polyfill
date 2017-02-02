@@ -1,8 +1,9 @@
 # postcss-image-set [![Build Status](https://travis-ci.org/alex499/postcss-image-set.svg)](https://travis-ci.org/alex499/postcss-image-set)
 
-[PostCSS] plugin for fallback image-set.
+[PostCSS] plugin for fallback [image-set] property.
 
 [PostCSS]: https://github.com/postcss/postcss
+[image-set]: http://caniuse.com/#feat=css-image-set
 
 ```css
 /* Input example */

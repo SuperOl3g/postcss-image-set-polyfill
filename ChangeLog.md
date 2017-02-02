@@ -1,3 +1,7 @@
-# 1.0.0 - 2015-04-04
+# 1.1.0
 
-✨ Initial release
+   - Removed redundant original properties
+
+# 1.0.0
+
+   - Initial release
