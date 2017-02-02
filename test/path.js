@@ -23,32 +23,17 @@ describe('postcss-image-set', function () {
         var output = `
           a {
               background-image: url("img/test.png");
-              background-image: image-set(
-                  "img/test.png" 1x,
-                  "img/test-2x.png" 2x,
-                  "my-img-print.png" 600dpi
-              );
           }
 
           @media (screen and min-resolution: 2dppx){
               a{
                   background-image: url("img/test-2x.png");
-                  background-image: image-set(
-                      "img/test.png" 1x,
-                      "img/test-2x.png" 2x,
-                      "my-img-print.png" 600dpi
-                  );
               }
           }
 
           @media (screen and min-resolution: 600dpi){
               a{
                   background-image: url("my-img-print.png");
-                  background-image: image-set(
-                      "img/test.png" 1x,
-                      "img/test-2x.png" 2x,
-                      "my-img-print.png" 600dpi
-                  );
               }
           }
       `;
