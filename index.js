@@ -37,7 +37,7 @@ var split = function (image) {
 
 // get the default image
 var getDefault = function (images) {
-    var img = images.filter(function (image) { return image.size === '1x'; })[0];
+    var img = images.find(function (image) { return image.size === '1x'; });
     if ( !img ) {
         // just use first image
         return images[0];
@@ -82,9 +82,7 @@ module.exports = postcss.plugin('postcss-image-set', function (opts) {
 
             // add the default image to the decl
             var image = getDefault(images);
-            decl.cloneBefore({
-                value: image.url
-            });
+            decl.value = image.url;
 
             // for each image add a media query
             images
@@ -102,13 +100,11 @@ module.exports = postcss.plugin('postcss-image-set', function (opts) {
                 });
 
                 var d  = decl.clone({ value: img.url });
-                var dd = decl.clone();
 
                 // mark nodes as visited by us
                 d.__visited  = true;
-                dd.__visited = true;
 
-                parent.append(d, dd);
+                parent.append(d);
                 atrule.append(parent);
 
                 decl.root().append(atrule);

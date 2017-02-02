@@ -21,30 +21,15 @@ describe('postcss-image-set', function () {
             '}',
             'a{' +
                 'background-image: url(img/test.png); ' +
-                'background-image: image-set(' +
-                    'url(img/test.png) 1x, ' +
-                    'url(img/test-2x.png) 2x, ' +
-                    'url(my-img-print.png) 600dpi' +
-                ');' +
             '}' +
             '@media (screen and min-resolution: 2dppx){' +
                 'a{' +
                     'background-image: url(img/test-2x.png);' +
-                    'background-image: image-set(' +
-                        'url(img/test.png) 1x, ' +
-                        'url(img/test-2x.png) 2x, ' +
-                        'url(my-img-print.png) 600dpi' +
-                    ');' +
                 '}' +
             '}'+
             '@media (screen and min-resolution: 600dpi){' +
                 'a{' +
                     'background-image: url(my-img-print.png);' +
-                    'background-image: image-set(' +
-                        'url(img/test.png) 1x, ' +
-                        'url(img/test-2x.png) 2x, ' +
-                        'url(my-img-print.png) 600dpi' +
-                    ');'+
                 '}' +
             '}',
             { }, done);
@@ -61,30 +46,15 @@ describe('postcss-image-set', function () {
             '}',
             'a{' +
                 'background-image: url(img/test.png); ' +
-                'background-image: -webkit-image-set(' +
-                    'url(img/test.png) 1x, ' +
-                    'url(img/test-2x.png) 2x, ' +
-                    'url(my-img-print.png) 600dpi' +
-                ');' +
             '}' +
             '@media (screen and min-resolution: 2dppx){' +
                 'a{' +
                     'background-image: url(img/test-2x.png);' +
-                    'background-image: -webkit-image-set(' +
-                        'url(img/test.png) 1x, ' +
-                        'url(img/test-2x.png) 2x, ' +
-                        'url(my-img-print.png) 600dpi' +
-                    ');' +
                 '}' +
             '}'+
             '@media (screen and min-resolution: 600dpi){' +
                 'a{' +
                     'background-image: url(my-img-print.png);' +
-                    'background-image: -webkit-image-set(' +
-                        'url(img/test.png) 1x, ' +
-                        'url(img/test-2x.png) 2x, ' +
-                        'url(my-img-print.png) 600dpi' +
-                    ');'+
                 '}' +
             '}',
             { }, done);

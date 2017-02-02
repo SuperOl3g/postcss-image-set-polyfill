@@ -17,29 +17,17 @@
 /* Output example */
 .foo {
     background-image: url(img/test.png);
-    background-image: image-set(url(img/test.png) 1x,
-                                url(img/test-2x.png) 2x,
-                                url(my-img-print.png) 600dpi);
 }
 
-/* polyfill behaviour */
 @media (screen and min-resolution: 2dppx) {
     .foo {
         background-image: url(img/test-2x.png);
-        /* let browser that support image-set choose themselves */
-        background-image: image-set(url(img/test.png) 1x,
-                                    url(img/test-2x.png) 2x,
-                                    url(my-img-print.png) 600dpi);
     }
 }
 
 @media (screen and min-resolution: 600pdi) {
     .foo{
         background-image: url(my-img-print.png);
-        /* let browser that support image-set choose themselves */
-        background-image: image-set(url(img/test.png) 1x,
-                                    url(img/test-2x.png) 2x,
-                                    url(my-img-print.png) 600dpi);
     }
 }
 ```
