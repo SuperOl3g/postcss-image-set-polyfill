@@ -5,8 +5,10 @@
   "keywords": [
     "postcss",
     "css",
-    "postcssplugin",
-    "image-set"
+    "postcss-plugin",
+    "image-set",
+    "background",
+    "image"
   ],
   "author": "Alex <alex.zx0@gmail.com>",
   "license": "MIT",
