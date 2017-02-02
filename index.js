@@ -37,7 +37,7 @@ var split = function (image) {
 
 // get the default image
 var getDefault = function (images) {
-    var img = images.find(function (image) { return image.size === '1x'; });
+    var img = images.filter(function (image) { return image.size === '1x'; })[0];
     if ( !img ) {
         // just use first image
         return images[0];
