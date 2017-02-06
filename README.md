@@ -1,3 +1,5 @@
+[![NPM](https://nodei.co/npm/postcss-image-set-polyfill.png?compact=true)](https://npmjs.org/package/postcss-image-set-polyfill)
+
 # postcss-image-set-polyfill [![Build Status](https://travis-ci.org/alex499/postcss-image-set.svg)](https://travis-ci.org/alex499/postcss-image-set)
 
 [PostCSS] plugin for fallback [image-set] property.
