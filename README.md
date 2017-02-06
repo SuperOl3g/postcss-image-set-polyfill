@@ -1,4 +1,4 @@
-# postcss-image-set [![Build Status](https://travis-ci.org/alex499/postcss-image-set.svg)](https://travis-ci.org/alex499/postcss-image-set)
+# postcss-image-set-polyfill [![Build Status](https://travis-ci.org/alex499/postcss-image-set.svg)](https://travis-ci.org/alex499/postcss-image-set)
 
 [PostCSS] plugin for fallback [image-set] property.
 
@@ -32,11 +32,16 @@
     }
 }
 ```
+## Installation
+
+`npm i postcss-image-set-polyfill -D`
 
 ## Usage
 
 ```js
-postcss([ require('postcss-image-set') ])
+var postcssImageSet = require('postcss-image-set-polyfill');
+
+postcss([postcssImageSet]).process(YOUR_CSS, /* options */);;
 ```
 
 See [PostCSS] docs for examples for your environment.

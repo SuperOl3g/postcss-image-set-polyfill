@@ -58,7 +58,7 @@ var sizeToResolution = function (size) {
 };
 
 
-module.exports = postcss.plugin('postcss-image-set', function (opts) {
+module.exports = postcss.plugin('postcss-image-set-polyfill', function (opts) {
     opts = opts || {};
 
     return function (css) {

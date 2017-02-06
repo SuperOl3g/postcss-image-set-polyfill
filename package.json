@@ -1,6 +1,6 @@
 {
-  "name": "postcss-image-set",
-  "version": "1.1.0",
+  "name": "postcss-image-set-polyfill",
+  "version": "0.2.0",
   "description": "PostCSS plugin for fallback image-set",
   "keywords": [
     "postcss",
@@ -10,11 +10,14 @@
     "background",
     "image"
   ],
-  "author": "Alex <alex.zx0@gmail.com>",
+  "author": "SuperOl3g <oleglykasov@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/romeovs/postcss-image-set.git"
+    "url": "https://github.com/SuperOl3g/postcss-image-set-polyfill.git"
   },
   "dependencies": {
     "postcss": "^5.0.14"
