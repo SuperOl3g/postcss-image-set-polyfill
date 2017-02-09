@@ -45,10 +45,10 @@ var postcssImageSet = require('postcss-image-set-polyfill');
 postcss([postcssImageSet]).process(YOUR_CSS, /* options */);;
 ```
 
-##⚠️️ Warning
+See [PostCSS] docs for examples for your environment.
+
+
+###⚠️️ Warning
 
 If you use autoprefixer, place this plugin before it to prevent styles duplication.
 
-
-
-See [PostCSS] docs for examples for your environment.
