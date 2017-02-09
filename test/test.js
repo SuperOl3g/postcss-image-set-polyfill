@@ -22,12 +22,12 @@ describe('postcss-image-set', function () {
             'a{' +
                 'background-image: url(img/test.png); ' +
             '}' +
-            '@media (screen and min-resolution: 2dppx){' +
+            '@media (min-resolution: 144dpi){' +
                 'a{' +
                     'background-image: url(img/test-2x.png);' +
                 '}' +
             '}'+
-            '@media (screen and min-resolution: 600dpi){' +
+            '@media (min-resolution: 600dpi){' +
                 'a{' +
                     'background-image: url(my-img-print.png);' +
                 '}' +
@@ -47,12 +47,12 @@ describe('postcss-image-set', function () {
             'a{' +
                 'background-image: url(img/test.png); ' +
             '}' +
-            '@media (screen and min-resolution: 2dppx){' +
+            '@media (min-resolution: 144dpi){' +
                 'a{' +
                     'background-image: url(img/test-2x.png);' +
                 '}' +
             '}'+
-            '@media (screen and min-resolution: 600dpi){' +
+            '@media (min-resolution: 600dpi){' +
                 'a{' +
                     'background-image: url(my-img-print.png);' +
                 '}' +

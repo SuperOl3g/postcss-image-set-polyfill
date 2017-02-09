@@ -49,8 +49,7 @@ var getDefault = function (images) {
 var sizeToResolution = function (size) {
     var m = size.match(/([0-9]+)x/);
     if ( m ) {
-        var ratio = m[1];
-        return ratio + 'dppx';
+        return 72 * m[1] + 'dpi';
     } else {
         // for 'dpi', etc.
         return size;
@@ -90,7 +89,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function (opts) {
             .forEach(function(img) {
                 var atrule = postcss.atRule({
                     name: 'media',
-                    params: '(screen and min-resolution: ' + sizeToResolution(img.size) + ')'
+                    params: '(min-resolution: ' + sizeToResolution(img.size) + ')'
                 });
 
 

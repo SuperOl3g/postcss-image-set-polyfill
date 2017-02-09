@@ -21,13 +21,13 @@
     background-image: url(img/test.png);
 }
 
-@media (screen and min-resolution: 2dppx) {
+@media (min-resolution: 144dpi) {
     .foo {
         background-image: url(img/test-2x.png);
     }
 }
 
-@media (screen and min-resolution: 600pdi) {
+@media (min-resolution: 600pdi) {
     .foo{
         background-image: url(my-img-print.png);
     }
