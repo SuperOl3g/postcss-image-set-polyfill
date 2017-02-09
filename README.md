@@ -50,5 +50,5 @@ See [PostCSS] docs for examples for your environment.
 
 ###⚠️️ Warning
 
-If you use autoprefixer, place this plugin before it to prevent styles duplication.
+If you use [autoprefixer](https://github.com/postcss/autoprefixer), place this plugin before it to prevent styles duplication.
 
