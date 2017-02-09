@@ -27,7 +27,7 @@
     }
 }
 
-@media (min-resolution: 600pdi) {
+@media (min-resolution: 600dpi) {
     .foo{
         background-image: url(my-img-print.png);
     }
