@@ -23,12 +23,12 @@
     "postcss": "^5.0.14"
   },
   "devDependencies": {
-    "gulp-eslint": "0.8.0",
-    "gulp-mocha": "2.0.1",
     "chai": "2.2.0",
-    "gulp": "3.8.11"
+    "eslint": "3.15.0",
+    "mocha": "3.2.0"
   },
   "scripts": {
-    "test": "gulp"
+    "test": "mocha",
+    "lint": "eslint *.js **/*.js || true"
   }
 }
