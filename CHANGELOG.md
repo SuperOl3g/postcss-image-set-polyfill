@@ -1,7 +1,7 @@
 # 0.2.1
 
    - `dppx` units have been replaced with `dpi` units for better browser compatibility
-   - Removed `screen and` from media-query
+   - Remove `screen and` from media-query
 
 # 0.2.0
 
