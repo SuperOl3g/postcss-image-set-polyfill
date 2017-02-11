@@ -30,8 +30,8 @@ var extractUrl = function (image) {
 // split url and size
 var split = function (image) {
     return {
-      size: extractSize(image)
-    , url:  extractUrl(image)
+        size: extractSize(image),
+        url:  extractUrl(image)
     };
 };
 
