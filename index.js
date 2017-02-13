@@ -1,4 +1,5 @@
 var postcss = require('postcss');
+var mediaParser = require('postcss-media-query-parser').default;
 
 // get the list of images
 var extractList = function (decl) {
@@ -73,7 +74,9 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function (opts) {
                 return;
             }
 
-            // console.log(decl.value);
+            var media = decl.parent.parent.params;
+
+            var parsedMedia = media && mediaParser(media);
 
             var images = extractList(decl)
             .map(split)
@@ -87,11 +90,17 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function (opts) {
             images
             .filter(function (img) { return img.size !== '1x'; })
             .forEach(function(img) {
+                var minResQuery = '(min-resolution: ' + sizeToResolution(img.size) + ')';
+                var paramStr = parsedMedia ?
+                    parsedMedia.nodes.map(function(queryNode) {
+                        return queryNode.value + ' and ' + minResQuery
+                    }).join(',')
+                    : minResQuery;
+
                 var atrule = postcss.atRule({
                     name: 'media',
-                    params: '(min-resolution: ' + sizeToResolution(img.size) + ')'
+                    params: paramStr
                 });
-
 
                 // clone empty parent with only relevant decls
                 var parent = decl.parent.clone({
