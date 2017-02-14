@@ -74,13 +74,11 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function (opts) {
                 return;
             }
 
+            // check for the media queries
             var media = decl.parent.parent.params;
-
             var parsedMedia = media && mediaParser(media);
 
-            var images = extractList(decl)
-            .map(split)
-            ;
+            var images = extractList(decl).map(split);
 
             // add the default image to the decl
             var image = getDefault(images);
