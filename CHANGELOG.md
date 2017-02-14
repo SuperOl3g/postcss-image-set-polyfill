@@ -1,3 +1,7 @@
+# 0.2.3
+
+- fixed media query bug
+
 # 0.2.2
 
 - updated README
