@@ -2,67 +2,53 @@ var postcss = require('postcss');
 var mediaParser = require('postcss-media-query-parser').default;
 
 // get the list of images
-var extractList = function (decl) {
+var extractList = decl => {
     var stripped = decl.value.replace(/(\r\n|\n)/g, '');
-    var inside   = stripped.match(/image-set\(([\s\S]+)\)/)[1];
+    var inside = stripped.match(/image-set\(([\s\S]+)\)/)[1];
     return postcss.list.comma(inside);
 };
 
 // get the size of image
-var extractSize = function (image) {
+var extractSize = image => {
     var l = postcss.list.space(image);
-    if (l.length === 1) {
-        return '1x';
-    } else {
-        return l[1];
-    }
+    return l.length === 1 ? '1x' : l[1];
 };
 
 // get the url of an image
-var extractUrl = function (image) {
+var extractUrl = image => {
     var url = postcss.list.space(image)[0];
-    if ( url.match(/url\(/) || url.match(/image\(/) ) {
-        return url;
-    } else {
-        return 'url(' + url + ')';
-    }
+    return url.match(/url\(/) || url.match(/image\(/) ?
+        url :
+        `url(${url})`;
 };
 
 // split url and size
-var split = function (image) {
-    return {
-        size: extractSize(image),
-        url:  extractUrl(image)
-    };
-};
+var split = image => ({
+    size: extractSize(image),
+    url:  extractUrl(image)
+});
 
 // get the default image
-var getDefault = function (images) {
-    var img = images.filter(function (image) { return image.size === '1x'; })[0];
-    if ( !img ) {
-        // just use first image
-        return images[0];
-    } else {
-        return img;
-    }
+var getDefault = images => {
+    var img = images.find( image => image.size === '1x' );
+
+    return img ?
+        img :
+        images[0]; // just use first image
 };
 
-var sizeToResolution = function (size) {
+var sizeToResolution = size => {
     var m = size.match(/([0-9]+)x/);
-    if ( m ) {
-        return 72 * m[1] + 'dpi';
-    } else {
-        // for 'dpi', etc.
-        return size;
-    }
+    return m ?
+        `${72 * m[1]}dpi` :
+        size;     // for 'dpi', etc.
 };
 
 
-module.exports = postcss.plugin('postcss-image-set-polyfill', function (opts) {
-    opts = opts || {};
+module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) => {
 
     return function (css) {
-        css.walkDecls('background-image', function (decl) {
+        css.walkDecls('background-image', decl => {
 
             // ignore nodes we already visited
             if ( decl.__visited ) {
@@ -86,14 +72,13 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function (opts) {
 
             // for each image add a media query
             images
-            .filter(function (img) { return img.size !== '1x'; })
-            .forEach(function(img) {
-                var minResQuery = '(min-resolution: ' + sizeToResolution(img.size) + ')';
+            .filter( img => img.size !== '1x')
+            .forEach( img => {
+                var minResQuery = `(min-resolution: ${sizeToResolution(img.size)})`;
+
                 var paramStr = parsedMedia ?
-                    parsedMedia.nodes.map(function(queryNode) {
-                        return queryNode.value + ' and ' + minResQuery
-                    }).join(',')
-                    : minResQuery;
+                    parsedMedia.nodes.map(queryNode => `${queryNode.value} and ${minResQuery}`).join(',') :
+                    minResQuery;
 
                 var atrule = postcss.atRule({
                     name: 'media',
@@ -108,7 +93,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function (opts) {
                 var d  = decl.clone({ value: img.url });
 
                 // mark nodes as visited by us
-                d.__visited  = true;
+                d.__visited = true;
 
                 parent.append(d);
                 atrule.append(parent);
