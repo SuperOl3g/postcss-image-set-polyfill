@@ -45,10 +45,9 @@ var sizeToResolution = size => {
 };
 
 
-module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) => {
-
-    return function (css) {
-        css.walkDecls('background-image', decl => {
+module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
+    css => {
+        css.walkDecls(/^(background-image|background)/, decl => {
 
             // ignore nodes we already visited
             if ( decl.__visited ) {
@@ -66,9 +65,16 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) => {
 
             var images = extractList(decl).map(split);
 
+            // remember other part of property if it's 'background'
+            var suffix = '';
+            if(decl.prop === 'background') {
+                var beautifiedlVal = decl.value.replace(/(\n|\r)\s+/g, ' ');
+                suffix = /.*\)(.*)/.exec(beautifiedlVal)[1];
+            }
+
             // add the default image to the decl
             var image = getDefault(images);
-            decl.value = image.url;
+            decl.value = image.url + suffix;
 
             // for each image add a media query
             images
@@ -90,7 +96,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) => {
                     nodes: []
                 });
 
-                var d  = decl.clone({ value: img.url });
+                var d  = decl.clone({ value: img.url + suffix });
 
                 // mark nodes as visited by us
                 d.__visited = true;
@@ -101,5 +107,5 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) => {
                 decl.root().append(atrule);
             });
         });
-    };
-});
+    }
+);

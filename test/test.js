@@ -127,4 +127,31 @@ describe('postcss-image-set-polyfill', () => {
 
         test(input, output, {}, done);
     });
+
+    it('parses the image-set in background property', done => {
+        let input =
+            `a{
+                background: image-set(
+                    url(img/test.png) 1x,
+                    url(img/test-2x.png) 2x,
+                    url(my-img-print.png) 600dpi
+                ) top left no-repeat red;
+            }`;
+        let output =
+            `a {
+                background: url(img/test.png) top left no-repeat red;
+            }
+            @media (min-resolution: 144dpi) {
+                a {
+                    background: url(img/test-2x.png) top left no-repeat red;
+                }
+            }
+            @media (min-resolution: 600dpi) {
+                a {
+                    background: url(my-img-print.png) top left no-repeat red;
+                }
+            }`;
+
+        test(input, output, {}, done);
+    });
 });
