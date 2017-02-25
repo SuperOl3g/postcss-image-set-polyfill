@@ -1,3 +1,7 @@
+# 0.3.1
+
+- limit possible property list  
+
 # 0.3.0
 
 - add `background` property support

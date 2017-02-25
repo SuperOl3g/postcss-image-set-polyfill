@@ -47,7 +47,7 @@ var sizeToResolution = size => {
 
 module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
     css => {
-        css.walkDecls(/^(background-image|background)/, decl => {
+        css.walkDecls(/^(background-image|background)$/, decl => {
 
             // ignore nodes we already visited
             if ( decl.__visited ) {
