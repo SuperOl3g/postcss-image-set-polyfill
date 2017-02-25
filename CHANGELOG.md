@@ -1,3 +1,7 @@
+# 0.3.0
+
+- add `background` property support
+
 # 0.2.3
 
 - fixed media query bug
