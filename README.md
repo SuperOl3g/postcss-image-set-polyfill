@@ -52,7 +52,7 @@ postcss([postcssImageSet]).process(YOUR_CSS, /* options */);;
 See [PostCSS] docs for examples for your environment.
 
 
-###⚠️️ Warning
+### ⚠️️ Warning
 
 If you use [autoprefixer](https://github.com/postcss/autoprefixer), place this plugin before it to prevent styles duplication.
 
