@@ -35,7 +35,7 @@
 [Try it online](https://astexplorer.net/#/gist/86d1248cc4628f850454d3191c95efec/latest)
 
 
-❗️ Resolution media query isn't supported by IE8-.
+❗️ Resolution media query is supported only by IE9+.
 
 ## Installation
 
