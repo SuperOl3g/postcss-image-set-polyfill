@@ -32,7 +32,7 @@
     }
 }
 ```
-[Try it online](https://astexplorer.net/#/gist/86d1248cc4628f850454d3191c95efec/latest)
+[Try it online](https://astexplorer.net/#/gist/86d1248cc4628f850454d3191c95efec/0bf0d13502cacd768c86ae15c3a3020fc35150aa)
 
 
 ❗️ Resolution media query is supported only by IE9+.
