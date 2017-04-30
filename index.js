@@ -2,8 +2,8 @@ var postcss = require('postcss');
 var mediaParser = require('postcss-media-query-parser').default;
 
 // get the list of images
-var extractList = decl => {
-    var stripped = decl.value.replace(/(\r\n|\n)/g, '');
+var extractList = value => {
+    var stripped = value.replace(/(\r\n|\n)/g, '');
     var inside = stripped.match(/image-set\(([\s\S]+)\)/)[1];
     return postcss.list.comma(inside);
 };
@@ -32,18 +32,20 @@ var split = image => ({
 var getDefault = images => {
     var img = images.find( image => image.size === '1x' );
 
-    return img ?
-        img :
-        images[0]; // just use first image
+    return img || images[0]; // just use first image
 };
 
 var sizeToResolution = size => {
-    var m = size.match(/([0-9]+)x/);
+    var m = size.match(/^([0-9]+)x$/);
     return m ?
         `${72 * m[1]}dpi` :
         size;     // for 'dpi', etc.
 };
 
+var getSuffix = value => {
+    var beautifiedlVal = value.replace(/(\n|\r)\s+/g, ' ');
+    return  /.*\)(.*)/.exec(beautifiedlVal)[1];
+};
 
 module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
     css => {
@@ -59,53 +61,72 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
                 return;
             }
 
+            var commaSeparatedValues = postcss.list.comma(decl.value);
+            var mediaQueryList = new Set();
+
+            var parsedValues = commaSeparatedValues.map(value => {
+                var result = {};
+
+                if (value.indexOf('image-set') === -1) {
+                    result.default = value;
+                    return result;
+                }
+
+                var images = extractList(value).map(split);
+
+                // remember other part of property if it's 'background' property
+                var suffix = decl.prop === 'background' ?  getSuffix(value) : '';
+
+                // add the default image to the decl
+                result.default = getDefault(images).url + suffix;
+
+                // for each image add a media query
+                if (images.length > 1) {
+                    images.forEach(img => {
+                        if (img.size !== '1x') {
+                            mediaQueryList.add(img.size);
+                            result[img.size] = img.url + suffix;
+                        }
+                    });
+                }
+
+                return result;
+            });
+
+            decl.value = parsedValues.map(val => val.default).join(',');
+
             // check for the media queries
             var media = decl.parent.parent.params;
             var parsedMedia = media && mediaParser(media);
 
-            var images = extractList(decl).map(split);
+            mediaQueryList
+                .forEach( size => {
+                    var minResQuery = `(min-resolution: ${sizeToResolution(size)})`;
 
-            // remember other part of property if it's 'background'
-            var suffix = '';
-            if(decl.prop === 'background') {
-                var beautifiedlVal = decl.value.replace(/(\n|\r)\s+/g, ' ');
-                suffix = /.*\)(.*)/.exec(beautifiedlVal)[1];
-            }
+                    var paramStr = parsedMedia ?
+                        parsedMedia.nodes.map(queryNode => `${queryNode.value} and ${minResQuery}`).join(',') :
+                        minResQuery;
 
-            // add the default image to the decl
-            var image = getDefault(images);
-            decl.value = image.url + suffix;
+                    var atrule = postcss.atRule({
+                        name: 'media',
+                        params: paramStr
+                    });
 
-            // for each image add a media query
-            images
-            .filter( img => img.size !== '1x')
-            .forEach( img => {
-                var minResQuery = `(min-resolution: ${sizeToResolution(img.size)})`;
+                    // clone empty parent with only relevant decls
+                    var parent = decl.parent.clone({
+                        nodes: []
+                    });
 
-                var paramStr = parsedMedia ?
-                    parsedMedia.nodes.map(queryNode => `${queryNode.value} and ${minResQuery}`).join(',') :
-                    minResQuery;
+                    var d  = decl.clone({ value: parsedValues.map(val => val[size] || val.default).join(',')});
 
-                var atrule = postcss.atRule({
-                    name: 'media',
-                    params: paramStr
+                    // mark nodes as visited by us
+                    d.__visited = true;
+
+                    parent.append(d);
+                    atrule.append(parent);
+
+                    decl.root().append(atrule);
                 });
-
-                // clone empty parent with only relevant decls
-                var parent = decl.parent.clone({
-                    nodes: []
-                });
-
-                var d  = decl.clone({ value: img.url + suffix });
-
-                // mark nodes as visited by us
-                d.__visited = true;
-
-                parent.append(d);
-                atrule.append(parent);
-
-                decl.root().append(atrule);
-            });
         });
     }
 );

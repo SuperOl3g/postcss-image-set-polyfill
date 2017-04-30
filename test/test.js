@@ -4,7 +4,7 @@ var expect  = require('chai').expect;
 var postcss = require('postcss');
 var imageSet = require('../');
 
-var test = (input, output, opts, done) => {
+var test = (input, output, done) => {
     expect(postcss(imageSet).process(input).css.replace(/[ \n]/g, ''))
         .to.eql(output.replace(/[ \n]/g, ''));
 
@@ -12,6 +12,24 @@ var test = (input, output, opts, done) => {
 };
 
 describe('postcss-image-set-polyfill', () => {
+    it('don\'t break simple background-image property' , done => {
+        let input =
+            `a {
+                background-image: url("img/test.png");
+            }`;
+
+        test(input, input, done);
+    });
+
+    it('don\'t break simple background property' , done => {
+        let input =
+            `a {
+                background: url(my-img-print.png) top left no-repeat red;
+            }`;
+
+        test(input, input, done);
+    });
+
     it('parses the image-set', done => {
         let input =
             `a{
@@ -36,7 +54,37 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, {}, done);
+        test(input, output, done);
+    });
+
+    it('parses the image-set with only 1x', done => {
+        let input =
+            `a{
+                background-image: image-set(
+                    url(img/test.png) 1x
+                );
+            }`;
+        let output =
+            `a {
+                background-image: url(img/test.png);
+            }`;
+
+        test(input, output, done);
+    });
+
+    it('parses the image-set with only 2x', done => {
+        let input =
+            `a{
+                background-image: image-set(
+                    url(img/test.png) 2x
+                );
+            }`;
+        let output =
+            `a {
+                background-image: url(img/test.png);
+            }`;
+
+        test(input, output, done);
     });
 
     it('parses the image-set without url', done => {
@@ -66,7 +114,7 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, {}, done);
+        test(input, output, done);
     });
 
     it('parses the -webkit-image-set', done => {
@@ -93,7 +141,7 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, {}, done);
+        test(input, output, done);
     });
 
     it('parses the image-set in media query', done => {
@@ -125,7 +173,7 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, {}, done);
+        test(input, output, done);
     });
 
     it('parses the image-set in background property', done => {
@@ -152,6 +200,49 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, {}, done);
+        test(input, output, done);
+    });
+
+    it('parses multiple values in background property', done => {
+        let input =
+            `a {
+                background: 
+                    image-set(
+                        url(../images/overlay.png)    1x,
+                        url(../images/overlay@2x.png) 2x
+                    ) no-repeat center,
+                    image-set(
+                        url(../images/bck.png)    1x,
+                        url(../images/bck@2x.png) 2x
+                    ) no-repeat top,
+                    linear-gradient(
+                        rgba(255, 0, 0, 0.5),
+                        rgba(255, 0, 0, 0.5)
+                    );
+            }`;
+
+        let output =
+            `a {
+                background: 
+                    url(../images/overlay.png) no-repeat center,
+                    url(../images/bck.png) no-repeat top,
+                    linear-gradient(
+                        rgba(255, 0, 0, 0.5),
+                        rgba(255, 0, 0, 0.5)
+                    );
+            }
+            @media (min-resolution: 144dpi) {
+                a {
+                    background: 
+                        url(../images/overlay@2x.png) no-repeat center,
+                        url(../images/bck@2x.png) no-repeat top,
+                        linear-gradient(
+                            rgba(255, 0, 0, 0.5),
+                            rgba(255, 0, 0, 0.5)
+                        );
+                }
+            }`;
+
+        test(input, output, done);
     });
 });
