@@ -87,6 +87,33 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
+    it('generate styles in correct order', done => {
+        let input =
+            `a {
+                background: image-set(
+                    url(../images/bck@3x.png) 3x,
+                    url(../images/bck.png) 1x,
+                    url(../images/bck@2x.png) 2x
+                );
+            }`;
+        let output =
+            `a {
+                background: url(../images/bck.png);
+            }
+            @media (min-resolution: 144dpi) {
+                a {
+                    background: url(../images/bck@2x.png);
+                }
+            }
+                        @media (min-resolution: 216dpi) {
+                a {
+                    background: url(../images/bck@3x.png);
+                }
+            }`;
+
+        test(input, output, done);
+    });
+
     it('parses the image-set without url', done => {
         let input =
             `a {

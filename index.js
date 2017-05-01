@@ -1,6 +1,8 @@
 var postcss = require('postcss');
 var mediaParser = require('postcss-media-query-parser').default;
 
+var DPI_RATIO = 72;
+
 // get the list of images
 var extractList = value => {
     var stripped = value.replace(/(\r\n|\n)/g, '');
@@ -11,7 +13,14 @@ var extractList = value => {
 // get the size of image
 var extractSize = image => {
     var l = postcss.list.space(image);
-    return l.length === 1 ? '1x' : l[1];
+    if(l.length === 1) {
+        return DPI_RATIO;
+    }
+    var m = l[1].match(/^([0-9]+)(dpi|x)$/);
+    if (m) {
+        return m[1] * (m[2] !== 'x' || DPI_RATIO);
+    }
+    throw 'Incorrect size value';
 };
 
 // get the url of an image
@@ -27,20 +36,6 @@ var split = image => ({
     size: extractSize(image),
     url:  extractUrl(image)
 });
-
-// get the default image
-var getDefault = images => {
-    var img = images.find( image => image.size === '1x' );
-
-    return img || images[0]; // just use first image
-};
-
-var sizeToResolution = size => {
-    var m = size.match(/^([0-9]+)x$/);
-    return m ?
-        `${72 * m[1]}dpi` :
-        size;     // for 'dpi', etc.
-};
 
 var getSuffix = value => {
     var beautifiedlVal = value.replace(/(\n|\r)\s+/g, ' ');
@@ -77,15 +72,17 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
                 // remember other part of property if it's 'background' property
                 var suffix = decl.prop === 'background' ?  getSuffix(value) : '';
 
-                // add the default image to the decl
-                result.default = getDefault(images).url + suffix;
+                result.default = images[0].url + suffix;
 
                 // for each image add a media query
                 if (images.length > 1) {
                     images.forEach(img => {
-                        if (img.size !== '1x') {
+                        if (img.size !== DPI_RATIO) {
                             mediaQueryList.add(img.size);
                             result[img.size] = img.url + suffix;
+                        }
+                        else {
+                            result.default = img.url + suffix;
                         }
                     });
                 }
@@ -93,15 +90,17 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
                 return result;
             });
 
+            // add the default image to the decl
             decl.value = parsedValues.map(val => val.default).join(',');
 
             // check for the media queries
             var media = decl.parent.parent.params;
             var parsedMedia = media && mediaParser(media);
 
-            mediaQueryList
+            Array.from(mediaQueryList)
+                .sort()
                 .forEach( size => {
-                    var minResQuery = `(min-resolution: ${sizeToResolution(size)})`;
+                    var minResQuery = `(min-resolution: ${size}dpi)`;
 
                     var paramStr = parsedMedia ?
                         parsedMedia.nodes.map(queryNode => `${queryNode.value} and ${minResQuery}`).join(',') :
