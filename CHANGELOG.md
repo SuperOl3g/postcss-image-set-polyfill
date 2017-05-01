@@ -1,34 +1,39 @@
-# 0.3.1
+# 0.3.2 (May 1, 2017)
 
-- limit possible property list  
+- fixed styles order bug
+- added multiple background values support
 
-# 0.3.0
+# 0.3.1 (February 25, 2017)
 
-- add `background` property support
+- limited possible property list  
 
-# 0.2.3
+# 0.3.0 (February 25, 2017)
+
+- added `background` property support
+
+# 0.2.3 (February 14, 2017)
 
 - fixed media query bug
 
-# 0.2.2
+# 0.2.2 (February 11, 2017)
 
 - updated README
 - removed gulp from dependencies
 
-# 0.2.1
+# 0.2.1 (February 9, 2017)
 
 - `dppx` units have been replaced with `dpi` units for better browser compatibility
 - Removed `screen and` from media-query
 
-# 0.2.0
+# 0.2.0 (February 6, 2017)
 
 - Removed redundant original properties
    
-# 0.1.0
+# 0.1.0 (February 2, 2017)
 
 - Fallback to background property have been replaced with polyfill  
 
 
-# 0.0.1
+# 0.0.1 (April 4, 2015)
 
 - Initial release
