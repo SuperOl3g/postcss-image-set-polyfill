@@ -57,7 +57,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
             }
 
             var commaSeparatedValues = postcss.list.comma(decl.value);
-            var mediaQueryList = new Set();
+            var mediaQueryList = [];
 
             var parsedValues = commaSeparatedValues.map(value => {
                 var result = {};
@@ -78,7 +78,9 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
                 if (images.length > 1) {
                     images.forEach(img => {
                         if (img.size !== DPI_RATIO) {
-                            mediaQueryList.add(img.size);
+                            if (mediaQueryList.indexOf(img.size) === -1) {
+                                mediaQueryList.push(img.size);
+                            }
                             result[img.size] = img.url + suffix;
                         }
                         else {
@@ -97,7 +99,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', (opts = {}) =>
             var media = decl.parent.parent.params;
             var parsedMedia = media && mediaParser(media);
 
-            Array.from(mediaQueryList)
+            mediaQueryList
                 .sort()
                 .forEach( size => {
                     var minResQuery = `(min-resolution: ${size}dpi)`;
