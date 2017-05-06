@@ -1,3 +1,6 @@
+# 0.3.3 (May 6, 2017)
+- turn back to ES5 for better compatibility of old version of NodeJS
+
 # 0.3.2 (May 1, 2017)
 
 - fixed styles order bug
