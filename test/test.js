@@ -6,16 +6,16 @@ var expect  = require('chai').expect;
 var postcss = require('postcss');
 var imageSet = require('../');
 
-var test = (input, output, done) => {
+var test = function(input, output, done) {
     expect(postcss(imageSet).process(input).css.replace(/[ \n]/g, ''))
         .to.eql(output.replace(/[ \n]/g, ''));
 
     done();
 };
 
-describe('postcss-image-set-polyfill', () => {
-    it('don\'t break simple background-image property' , done => {
-        let input =
+describe('postcss-image-set-polyfill', function() {
+    it('don\'t break simple background-image property' , function(done) {
+        var input =
             `a {
                 background-image: url("img/test.png");
             }`;
@@ -23,8 +23,8 @@ describe('postcss-image-set-polyfill', () => {
         test(input, input, done);
     });
 
-    it('don\'t break simple background property' , done => {
-        let input =
+    it('don\'t break simple background property' , function(done) {
+        var input =
             `a {
                 background: url(my-img-print.png) top left no-repeat red;
             }`;
@@ -32,8 +32,8 @@ describe('postcss-image-set-polyfill', () => {
         test(input, input, done);
     });
 
-    it('parses the image-set', done => {
-        let input =
+    it('parses the image-set', function(done) {
+        var input =
             `a{
                 background-image: image-set(
                     url(img/test.png) 1x,
@@ -41,7 +41,7 @@ describe('postcss-image-set-polyfill', () => {
                     url(my-img-print.png) 600dpi
                 );
             }`;
-        let output =
+        var output =
             `a {
                 background-image: url(img/test.png);
             }
@@ -59,14 +59,14 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
-    it('parses the image-set with only 1x', done => {
-        let input =
+    it('parses the image-set with only 1x', function(done) {
+        var input =
             `a{
                 background-image: image-set(
                     url(img/test.png) 1x
                 );
             }`;
-        let output =
+        var output =
             `a {
                 background-image: url(img/test.png);
             }`;
@@ -74,14 +74,14 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
-    it('parses the image-set with only 2x', done => {
-        let input =
+    it('parses the image-set with only 2x', function(done) {
+        var input =
             `a{
                 background-image: image-set(
                     url(img/test.png) 2x
                 );
             }`;
-        let output =
+        var output =
             `a {
                 background-image: url(img/test.png);
             }`;
@@ -89,8 +89,8 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
-    it('generate styles in correct order', done => {
-        let input =
+    it('generate styles in correct order', function(done) {
+        var input =
             `a {
                 background: image-set(
                     url(../images/bck@3x.png) 3x,
@@ -98,7 +98,7 @@ describe('postcss-image-set-polyfill', () => {
                     url(../images/bck@2x.png) 2x
                 );
             }`;
-        let output =
+        var output =
             `a {
                 background: url(../images/bck.png);
             }
@@ -116,8 +116,8 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
-    it('parses the image-set without url', done => {
-        let input =
+    it('parses the image-set without url', function(done) {
+        var input =
             `a {
                 background-image: image-set(
                     "img/test.png" 1x,
@@ -126,7 +126,7 @@ describe('postcss-image-set-polyfill', () => {
                 );
             }`;
 
-        let output =
+        var output =
             `a {
                 background-image: url("img/test.png");
             }
@@ -146,8 +146,8 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
-    it('parses the -webkit-image-set', done => {
-        let input =
+    it('parses the -webkit-image-set', function(done) {
+        var input =
             `a {
                 background-image: -webkit-image-set(
                     url(img/test.png) 1x,
@@ -155,7 +155,7 @@ describe('postcss-image-set-polyfill', () => {
                     url(my-img-print.png) 600dpi
                 );
             }`;
-        let output =
+        var output =
             `a {
                 background-image: url(img/test.png);
             }
@@ -173,8 +173,8 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
-    it('parses the image-set in media query', done => {
-        let input =
+    it('parses the image-set in media query', function(done) {
+        var input =
             `@media (min-width: 1000px) { 
                 a {
                     background-image: image-set(
@@ -185,7 +185,7 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        let output =
+        var output =
             `@media (min-width: 1000px) { 
                 a {
                     background-image: url(img/test.png);
@@ -205,8 +205,8 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
-    it('parses the image-set in background property', done => {
-        let input =
+    it('parses the image-set in background property', function(done) {
+        var input =
             `a{
                 background: image-set(
                     url(img/test.png) 1x,
@@ -214,7 +214,7 @@ describe('postcss-image-set-polyfill', () => {
                     url(my-img-print.png) 600dpi
                 ) top left no-repeat red;
             }`;
-        let output =
+        var output =
             `a {
                 background: url(img/test.png) top left no-repeat red;
             }
@@ -232,8 +232,8 @@ describe('postcss-image-set-polyfill', () => {
         test(input, output, done);
     });
 
-    it('parses multiple values in background property', done => {
-        let input =
+    it('parses multiple values in background property', function(done) {
+        var input =
             `a {
                 background: 
                     image-set(
@@ -250,7 +250,7 @@ describe('postcss-image-set-polyfill', () => {
                     );
             }`;
 
-        let output =
+        var output =
             `a {
                 background: 
                     url(../images/overlay.png) no-repeat center,
