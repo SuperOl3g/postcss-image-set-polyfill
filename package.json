@@ -20,7 +20,7 @@
     "url": "https://github.com/SuperOl3g/postcss-image-set-polyfill.git"
   },
   "dependencies": {
-    "postcss": "^5.0.14",
+    "postcss": "^6.0.1",
     "postcss-media-query-parser": "^0.2.3"
   },
   "devDependencies": {
