@@ -1,5 +1,9 @@
+# 0.3.5 (June 12, 2017)
+- change DPI ratio from 72 to 96
+- add decimal densites value support
+
 # 0.3.4 (May 23, 2017)
-- Upgrade to postcss version 6.0.1
+- upgrade to postcss version 6.0.1
 
 # 0.3.3 (May 6, 2017)
 - turn back to ES5 for better compatibility of old version of NodeJS
