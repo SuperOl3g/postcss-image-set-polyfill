@@ -272,4 +272,31 @@ describe('postcss-image-set-polyfill', function() {
 
         test(input, output, done);
     });
+
+    it('parses densities between 1x and 2x', function(done) {
+        var input =
+            'a{' +
+                'background-image: image-set(' +
+                    'url(img/test.png) 1x, ' +
+                    'url(img/test-1.3x.png) 1.3x, ' +
+                    'url(img/test-1.5x.png) 1.5x ' +
+                ');' +
+            '}';
+        var output =
+            'a {' +
+                'background-image: url(img/test.png);' +
+            '}' +
+            '@media (min-resolution: 124dpi) {' +
+                'a {' +
+                    'background-image: url(img/test-1.3x.png);' +
+                '}' +
+            '}' +
+            '@media (min-resolution: 144dpi) {' +
+                'a {' +
+                    'background-image: url(img/test-1.5x.png);' +
+                '}' +
+            '}';
+
+        test(input, output, done);
+    });
 });

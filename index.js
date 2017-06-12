@@ -16,9 +16,9 @@ var extractSize = function(image) {
     if(l.length === 1) {
         return DPI_RATIO;
     }
-    var m = l[1].match(/^([0-9]+)(dpi|x)$/);
+    var m = l[1].match(/^([0-9|\.]+)(dpi|x)$/);
     if (m) {
-        return m[1] * (m[2] !== 'x' || DPI_RATIO);
+        return Math.floor(m[1] * (m[2] !== 'x' || DPI_RATIO));
     }
     throw 'Incorrect size value';
 };
