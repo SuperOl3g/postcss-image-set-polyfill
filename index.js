@@ -1,7 +1,7 @@
 var postcss = require('postcss');
 var mediaParser = require('postcss-media-query-parser').default;
 
-var DPI_RATIO = 72;
+var DPI_RATIO = 96;
 
 // get the list of images
 var extractList = function(value) {

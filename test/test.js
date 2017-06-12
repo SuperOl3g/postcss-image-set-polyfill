@@ -45,7 +45,7 @@ describe('postcss-image-set-polyfill', function() {
             'a {' +
                 'background-image: url(img/test.png);' +
             '}' +
-            '@media (min-resolution: 144dpi) {' +
+            '@media (min-resolution: 192dpi) {' +
                 'a {' +
                     'background-image: url(img/test-2x.png);' +
                 '}' +
@@ -102,12 +102,12 @@ describe('postcss-image-set-polyfill', function() {
             'a {' +
                 'background: url(../images/bck.png);' +
             '}' +
-            '@media (min-resolution: 144dpi) {' +
+            '@media (min-resolution: 192dpi) {' +
                 'a {' +
                     'background: url(../images/bck@2x.png);' +
                 '}' +
             '}' +
-            '@media (min-resolution: 216dpi) {' +
+            '@media (min-resolution: 288dpi) {' +
                 'a {' +
                     'background: url(../images/bck@3x.png);' +
                 '}' +
@@ -130,7 +130,7 @@ describe('postcss-image-set-polyfill', function() {
             'a {' +
                 'background-image: url("img/test.png");' +
             '}' +
-            '@media (min-resolution: 144dpi) {' +
+            '@media (min-resolution: 192dpi) {' +
                 'a {' +
                     'background-image: url("img/test-2x.png");' +
                 '}' +
@@ -157,7 +157,7 @@ describe('postcss-image-set-polyfill', function() {
             'a {' +
                 'background-image: url(img/test.png);' +
             '}' +
-            '@media (min-resolution: 144dpi){' +
+            '@media (min-resolution: 192dpi){' +
                 'a {' +
                     'background-image: url(img/test-2x.png);' +
                 '}' +
@@ -189,7 +189,7 @@ describe('postcss-image-set-polyfill', function() {
                     'background-image: url(img/test.png);' +
                 '}' +
             '}' +
-            '@media (min-width: 1000px) and (min-resolution: 144dpi) {' +
+            '@media (min-width: 1000px) and (min-resolution: 192dpi) {' +
                 'a {' +
                     'background-image: url(img/test-2x.png);' +
                 '}' +
@@ -216,7 +216,7 @@ describe('postcss-image-set-polyfill', function() {
             'a {' +
                 'background: url(img/test.png) top left no-repeat red;' +
             '}' +
-            '@media (min-resolution: 144dpi) {' +
+            '@media (min-resolution: 192dpi) {' +
                 'a {' +
                     'background: url(img/test-2x.png) top left no-repeat red;' +
                 '}' +
@@ -258,7 +258,7 @@ describe('postcss-image-set-polyfill', function() {
                         'rgba(255, 0, 0, 0.5)' +
                     ');' +
             '}' +
-            '@media (min-resolution: 144dpi) {' +
+            '@media (min-resolution: 192dpi) {' +
                 'a {' +
                     'background:' +
                         'url(../images/overlay@2x.png) no-repeat center,' +
