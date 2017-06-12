@@ -32,7 +32,7 @@
     }
 }
 ```
-[Try it online](https://astexplorer.net/#/gist/86d1248cc4628f850454d3191c95efec/de5684b73276bf42df443e448b821d38f05414c4)
+[→Try it online←](https://astexplorer.net/#/gist/86d1248cc4628f850454d3191c95efec/de5684b73276bf42df443e448b821d38f05414c4)
 
 
 ❗️ Resolution media query is supported only by IE9+.
@@ -46,7 +46,7 @@
 ```js
 var postcssImageSet = require('postcss-image-set-polyfill');
 
-postcss([postcssImageSet]).process(YOUR_CSS, /* options */);;
+postcss([postcssImageSet]).process(YOUR_CSS, /* options */);
 ```
 
 See [PostCSS] docs for examples for your environment.
