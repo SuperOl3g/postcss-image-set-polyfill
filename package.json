@@ -26,10 +26,12 @@
   "devDependencies": {
     "chai": "2.2.0",
     "eslint": "3.15.0",
+    "husky": "^0.13.4",
     "mocha": "3.2.0"
   },
   "scripts": {
     "test": "mocha",
-    "lint": "eslint *.js **/*.js || true"
+    "lint": "eslint *.js **/*.js || true",
+    "prepush": "npm test"
   }
 }
