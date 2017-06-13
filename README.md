@@ -20,7 +20,7 @@
     background-image: url(img/test.png);
 }
 
-@media (min-resolution: 144dpi) {
+@media (min-resolution: 192dpi) {
     .foo {
         background-image: url(img/test-2x.png);
     }
