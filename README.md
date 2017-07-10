@@ -1,7 +1,7 @@
 
 # postcss-image-set-polyfill [![Build Status](https://travis-ci.org/SuperOl3g/postcss-image-set-polyfill.svg)](https://travis-ci.org/SuperOl3g/postcss-image-set-polyfill) [![npm version](https://badge.fury.io/js/postcss-image-set-polyfill.svg)](https://badge.fury.io/js/postcss-image-set-polyfill)
 
-[PostCSS] plugin for [polyfilling](http://caniuse.com/#feat=css-image-set) [`image-set`](https://drafts.csswg.org/css-images-3/#image-set-notation) CSS function.
+[PostCSS] plugin for [polyfilling](http://caniuse.com/#feat=css-image-set) [`image-set`](https://drafts.csswg.org/css-images-4/#image-set-notation) CSS function.
 
 [PostCSS]: https://github.com/postcss/postcss
 
@@ -55,4 +55,3 @@ See [PostCSS] docs for examples for your environment.
 ### ⚠️️ Warning
 
 If you use [autoprefixer](https://github.com/postcss/autoprefixer), place this plugin before it to prevent styles duplication.
-
