@@ -1,7 +1,11 @@
 var postcss = require('postcss');
 var mediaParser = require('postcss-media-query-parser').default;
 
-var DPI_RATIO = 96;
+var DPI_RATIO = {
+    x: 96,
+    dppx: 96,
+    dpcm: 2.54
+};
 
 // get the list of images
 var extractList = function(value) {
@@ -14,11 +18,11 @@ var extractList = function(value) {
 var extractSize = function(image) {
     var l = postcss.list.space(image);
     if(l.length === 1) {
-        return DPI_RATIO;
+        return DPI_RATIO.x;
     }
-    var m = l[1].match(/^([0-9|\.]+)(dpi|x)$/);
+    var m = l[1].match(/^([0-9|\.]+)(dpi|dppx|dpcm|x)$/);
     if (m) {
-        return Math.floor(m[1] * (m[2] !== 'x' || DPI_RATIO));
+        return Math.floor(m[1] * (DPI_RATIO[m[2]] || 1));
     }
     throw 'Incorrect size value';
 };
@@ -79,7 +83,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function() {
                 // for each image add a media query
                 if (images.length > 1) {
                     images.forEach(function(img) {
-                        if (img.size !== DPI_RATIO) {
+                        if (img.size !== DPI_RATIO.x) {
                             if (mediaQueryList.indexOf(img.size) === -1) {
                                 mediaQueryList.push(img.size);
                             }

@@ -89,6 +89,48 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
+    it('parses dppx unit', function(done) {
+        var input =
+            'a{' +
+                'background-image: image-set(' +
+                    'url(img/test.png) 1x, ' +
+                    'url(img/test-2x.png) 2dppx' +
+                ');' +
+            '}';
+        var output =
+            'a {' +
+                'background-image: url(img/test.png);' +
+            '}' +
+            '@media (min-resolution: 192dpi) {' +
+                'a {' +
+                    'background-image: url(img/test-2x.png);' +
+                '}' +
+            '}';
+
+        test(input, output, done);
+    });
+
+    it('parses dpcm unit', function(done) {
+        var input =
+            'a{' +
+                'background-image: image-set(' +
+                    'url(img/test.png) 1x, ' +
+                    'url(img/test-2x.png) 20dpcm' +
+                ');' +
+            '}';
+        var output =
+            'a {' +
+                'background-image: url(img/test.png);' +
+            '}' +
+            '@media (min-resolution: 50dpi) {' +
+                'a {' +
+                    'background-image: url(img/test-2x.png);' +
+                '}' +
+            '}';
+
+        test(input, output, done);
+    });
+
     it('generate styles in correct order', function(done) {
         var input =
             'a {' +
