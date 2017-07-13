@@ -1,26 +1,30 @@
-var postcss = require('postcss');
-var mediaParser = require('postcss-media-query-parser').default;
+const postcss = require('postcss');
+const mediaParser = require('postcss-media-query-parser').default;
 
-var DPI_RATIO = {
+const DPI_RATIO = {
     x: 96,
     dppx: 96,
     dpcm: 2.54
 };
 
 // get the list of images
-var extractList = function(value) {
-    var stripped = value.replace(/(\r\n|\n)/g, '');
-    var inside = stripped.match(/image-set\(([\s\S]+)\)/)[1];
+const extractList = value => {
+    const stripped = value.replace(/(\r\n|\n)/g, '');
+    const inside = stripped.match(/image-set\(([\s\S]+)\)/)[1];
+
     return postcss.list.comma(inside);
 };
 
 // get the size of image
-var extractSize = function(image) {
-    var l = postcss.list.space(image);
-    if(l.length === 1) {
+const extractSize = image => {
+    const l = postcss.list.space(image);
+
+    if (l.length === 1) {
         return DPI_RATIO.x;
     }
-    var m = l[1].match(/^([0-9|\.]+)(dpi|dppx|dpcm|x)$/);
+
+    const m = l[1].match(/^([0-9|\.]+)(dpi|dppx|dpcm|x)$/);
+
     if (m) {
         return Math.floor(m[1] * (DPI_RATIO[m[2]] || 1));
     }
@@ -28,29 +32,29 @@ var extractSize = function(image) {
 };
 
 // get the url of an image
-var extractUrl = function(image) {
-    var url = postcss.list.space(image)[0];
+const extractUrl = image => {
+    const url = postcss.list.space(image)[0];
+
     return url.match(/url\(/) || url.match(/image\(/) ?
         url :
-        'url(' + url + ')';
+        `url(${url})`;
 };
 
 // split url and size
-var split = function(image) {
-    return {
-        size: extractSize(image),
-        url:  extractUrl(image)
-    }
-};
+const split = image => ({
+    size: extractSize(image),
+    url:  extractUrl(image)
+});
 
-var getSuffix = function(value) {
-    var beautifiedlVal = value.replace(/(\n|\r)\s+/g, ' ');
+const getSuffix = value => {
+    const beautifiedlVal = value.replace(/(\n|\r)\s+/g, ' ');
+
     return  /.*\)(.*)/.exec(beautifiedlVal)[1];
 };
 
-module.exports = postcss.plugin('postcss-image-set-polyfill', function() {
-    return function(css) {
-        css.walkDecls(/^(background-image|background)$/, function(decl) {
+module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
+    css => {
+        css.walkDecls(/^(background-image|background)$/, decl => {
 
             // ignore nodes we already visited
             if (decl.__visited) {
@@ -62,27 +66,27 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function() {
                 return;
             }
 
-            var commaSeparatedValues = postcss.list.comma(decl.value);
-            var mediaQueryList = [];
+            const commaSeparatedValues = postcss.list.comma(decl.value);
+            const mediaQueryList = [];
 
-            var parsedValues = commaSeparatedValues.map(function(value) {
-                var result = {};
+            const parsedValues = commaSeparatedValues.map(value => {
+                const result = {};
 
                 if (value.indexOf('image-set') === -1) {
                     result.default = value;
                     return result;
                 }
 
-                var images = extractList(value).map(split);
+                const images = extractList(value).map(split);
 
                 // remember other part of property if it's 'background' property
-                var suffix = decl.prop === 'background' ? getSuffix(value) : '';
+                const suffix = decl.prop === 'background' ? getSuffix(value) : '';
 
                 result.default = images[0].url + suffix;
 
                 // for each image add a media query
                 if (images.length > 1) {
-                    images.forEach(function(img) {
+                    images.forEach(img => {
                         if (img.size !== DPI_RATIO.x) {
                             if (mediaQueryList.indexOf(img.size) === -1) {
                                 mediaQueryList.push(img.size);
@@ -99,33 +103,33 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function() {
             });
 
             // add the default image to the decl
-            decl.value = parsedValues.map(function(val) { return val.default; }).join(',');
+            decl.value = parsedValues.map(val => val.default).join(',');
 
             // check for the media queries
-            var media = decl.parent.parent.params;
-            var parsedMedia = media && mediaParser(media);
+            const media = decl.parent.parent.params;
+            const parsedMedia = media && mediaParser(media);
 
             mediaQueryList
                 .sort()
-                .forEach(function(size) {
-                    var minResQuery = '(min-resolution: ' + size + 'dpi)';
+                .forEach(size => {
+                    const minResQuery = `(min-resolution: ${size}dpi)`;
 
-                    var paramStr = parsedMedia ?
-                        parsedMedia.nodes.map(function(queryNode) { return queryNode.value + ' and ' + minResQuery; }).join(',') :
+                    const paramStr = parsedMedia ?
+                        parsedMedia.nodes.map(queryNode => `${queryNode.value} and ${minResQuery}`).join(',') :
                         minResQuery;
 
-                    var atrule = postcss.atRule({
+                    const atrule = postcss.atRule({
                         name: 'media',
                         params: paramStr
                     });
 
                     // clone empty parent with only relevant decls
-                    var parent = decl.parent.clone({
+                    const parent = decl.parent.clone({
                         nodes: []
                     });
 
-                    var d = decl.clone({
-                        value: parsedValues.map(function(val) { return val[size] || val.default; }).join(',')
+                    const d = decl.clone({
+                        value: parsedValues.map(val => val[size] || val.default).join(',')
                     });
 
                     // mark nodes as visited by us
@@ -138,4 +142,4 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', function() {
                 });
         });
     }
-});
+);
