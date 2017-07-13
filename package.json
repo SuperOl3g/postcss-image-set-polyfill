@@ -34,6 +34,7 @@
         "test": "mocha",
         "lint": "eslint *.js **/*.js || true",
         "benchmark": "node benchmark.js",
+        "precommit": "npm run lint",
         "prepush": "npm test"
     }
 }
