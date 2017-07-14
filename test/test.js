@@ -12,8 +12,8 @@ const test = function(input, output, done) {
     done();
 };
 
-describe('postcss-image-set-polyfill', function() {
-    it('don\'t break simple background-image property' , function(done) {
+describe('postcss-image-set-polyfill', () => {
+    it('don\'t break simple background-image property', done => {
         const input =
             `a {
                 background-image: url("img/test.png");
@@ -22,7 +22,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, input, done);
     });
 
-    it('don\'t break simple background property' , function(done) {
+    it('don\'t break simple background property', done => {
         const input =
             `a {
                 background: url(my-img-print.png) top left no-repeat red;
@@ -31,7 +31,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, input, done);
     });
 
-    it('parses the image-set', function(done) {
+    it('parses the image-set', done => {
         const input =
             `a{
                 background-image: image-set(
@@ -58,7 +58,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses the image-set with only 1x', function(done) {
+    it('parses the image-set with only 1x', done => {
         const input =
             `a{
                 background-image: image-set(
@@ -73,7 +73,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses the image-set with only 2x', function(done) {
+    it('parses the image-set with only 2x', done => {
         const input =
             `a{
                 background-image: image-set(
@@ -88,7 +88,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses dppx unit', function(done) {
+    it('parses dppx unit', done => {
         const input =
             `a{
                 background-image: image-set(
@@ -109,7 +109,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses dpcm unit', function(done) {
+    it('parses dpcm unit', done => {
         const input =
             `a{
                 background-image: image-set(
@@ -130,7 +130,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('throws exeption with unknown units', function(done) {
+    it('throws exeption with unknown units', done => {
         const input =
             `a{
                 background-image: image-set(
@@ -147,7 +147,7 @@ describe('postcss-image-set-polyfill', function() {
     });
 
 
-    it('generate styles in correct order', function(done) {
+    it('generate styles in correct order', done => {
         const input =
             `a {
                 background: image-set(
@@ -174,7 +174,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses the image-set without url', function(done) {
+    it('parses the image-set without url', done => {
         const input =
             `a {
                 background-image: image-set(
@@ -202,7 +202,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses the -webkit-image-set', function(done) {
+    it('parses the -webkit-image-set', done => {
         const input =
             `a {
                 background-image: -webkit-image-set(
@@ -229,7 +229,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses the image-set in media query', function(done) {
+    it('parses the image-set in media query', done => {
         const input =
             `@media (min-width: 1000px) {
                 a {
@@ -261,7 +261,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses the image-set in background property', function(done) {
+    it('parses the image-set in background property', done => {
         const input =
             `a{
                 background: image-set(
@@ -288,7 +288,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses multiple values in background property', function(done) {
+    it('parses multiple values in background property', done => {
         const input =
             `a {
                 background:
@@ -331,7 +331,7 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
-    it('parses densities between 1x and 2x', function(done) {
+    it('parses densities between 1x and 2x', done => {
         const input =
             `a{
                 background-image: image-set(
