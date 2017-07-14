@@ -130,6 +130,23 @@ describe('postcss-image-set-polyfill', function() {
         test(input, output, done);
     });
 
+    it('throws exeption with unknown units', function(done) {
+        const input =
+            `a{
+                background-image: image-set(
+                    url(img/test.png) 1x,
+                    url(img/test-2x.png) 2wtfunit
+                );
+            }`;
+
+
+        expect(() => postcss(imageSet).process(input).css)
+            .to.throw();
+
+        done();
+    });
+
+
     it('generate styles in correct order', function(done) {
         const input =
             `a {

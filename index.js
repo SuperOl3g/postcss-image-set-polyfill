@@ -4,7 +4,8 @@ const mediaParser = require('postcss-media-query-parser').default;
 const DPI_RATIO = {
     x: 96,
     dppx: 96,
-    dpcm: 2.54
+    dpcm: 2.54,
+    dpi: 1
 };
 
 // get the list of images
@@ -13,22 +14,6 @@ const extractList = value => {
     const inside = stripped.match(/image-set\(([\s\S]+)\)/)[1];
 
     return postcss.list.comma(inside);
-};
-
-// get the size of image
-const extractSize = image => {
-    const l = postcss.list.space(image);
-
-    if (l.length === 1) {
-        return DPI_RATIO.x;
-    }
-
-    const m = l[1].match(/^([0-9|\.]+)(dpi|dppx|dpcm|x)$/);
-
-    if (m) {
-        return Math.floor(m[1] * (DPI_RATIO[m[2]] || 1));
-    }
-    throw 'Incorrect size value';
 };
 
 // get the url of an image
@@ -40,12 +25,6 @@ const extractUrl = image => {
         `url(${url})`;
 };
 
-// split url and size
-const split = image => ({
-    size: extractSize(image),
-    url:  extractUrl(image)
-});
-
 const getSuffix = value => {
     const beautifiedlVal = value.replace(/(\n|\r)\s+/g, ' ');
 
@@ -55,6 +34,29 @@ const getSuffix = value => {
 module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
     css => {
         css.walkDecls(/^(background-image|background)$/, decl => {
+
+            // get the size of image
+            const extractSize = image => {
+                const l = postcss.list.space(image);
+
+                if (l.length === 1) {
+                    return DPI_RATIO.x;
+                }
+
+                const m = l[1].match(/^([0-9|\.]+)(.*?)$/);
+
+                if (m && DPI_RATIO[m[2]]) {
+                    return Math.floor(m[1] * DPI_RATIO[m[2]]);
+                }
+
+                throw decl.error('Incorrect size value', { word: m && m[2] });
+            };
+
+            // split url and size
+            const split = image => ({
+                size: extractSize(image),
+                url:  extractUrl(image)
+            });
 
             // ignore nodes we already visited
             if (decl.__visited) {
