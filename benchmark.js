@@ -16,7 +16,7 @@ const input =
 
 suite
     .add('Process CSS', () => {
-        postcss(imageSet).process(input);
+        postcss(imageSet).process(input).css;
     })
     .on('cycle', event => {
         console.log(String(event.target));
