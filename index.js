@@ -1,5 +1,6 @@
 const postcss = require('postcss');
 const mediaParser = require('postcss-media-query-parser').default;
+const valueParser = require('postcss-value-parser');
 
 const DPI_RATIO = {
     x: 96,
@@ -8,56 +9,57 @@ const DPI_RATIO = {
     dpi: 1
 };
 
-// get the list of images
-const extractList = value => {
-    const stripped = value.replace(/(\r\n|\n)/g, '');
-    const inside = stripped.match(/image-set\(([\s\S]+)\)/)[1];
+// convert all sizes to dpi for sorting
+const convertSize = (size, decl) => {
+    if (!size) {
+        return DPI_RATIO.x;
+    }
 
-    return postcss.list.comma(inside);
+    const m = size.match(/^([0-9|\.]+)(.*?)$/);
+
+    if (m && DPI_RATIO[m[2]]) {
+        return Math.floor(m[1] * DPI_RATIO[m[2]]);
+    }
+
+    throw decl.error('Incorrect size value', { word: m && m[2] });
 };
 
-// get the url of an image
-const extractUrl = image => {
-    const url = postcss.list.space(image)[0];
+const stringify = chunk => valueParser.stringify(chunk);
 
-    return url.match(/url\(/) || url.match(/image\(/) ?
-        url :
-        `url(${url})`;
-};
+const parseValue = (value, decl) => {
+    const valueChunks = valueParser(value).nodes;
 
-const getSuffix = value => {
-    const beautifiedlVal = value.replace(/(\n|\r)\s+/g, ' ');
+    const imageSetChunks = valueChunks.shift().nodes;
 
-    return  /.*\)(.*)/.exec(beautifiedlVal)[1];
+    const sizes = imageSetChunks
+            .filter(chunk => chunk.type === 'word')
+            .map(chunk => convertSize(stringify(chunk), decl));
+
+    const urls = imageSetChunks
+            .filter(chunk => chunk.type === 'function' || chunk.type === 'string')
+            .map(chunk => {
+                const str = stringify(chunk);
+                return chunk.type === 'string' ? `url(${str})` : str;
+            });
+
+    const suffix = valueChunks.length ?
+        valueChunks
+            .map(stringify)
+            .join('') :
+        '';
+
+    return {
+        images: {
+            size: sizes,
+            url: urls
+        },
+        suffix
+    };
 };
 
 module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
     css => {
         css.walkDecls(/^(background-image|background)$/, decl => {
-
-            // get the size of image
-            const extractSize = image => {
-                const l = postcss.list.space(image);
-
-                if (l.length === 1) {
-                    return DPI_RATIO.x;
-                }
-
-                const m = l[1].match(/^([0-9|\.]+)(.*?)$/);
-
-                if (m && DPI_RATIO[m[2]]) {
-                    return Math.floor(m[1] * DPI_RATIO[m[2]]);
-                }
-
-                throw decl.error('Incorrect size value', { word: m && m[2] });
-            };
-
-            // split url and size
-            const split = image => ({
-                size: extractSize(image),
-                url:  extractUrl(image)
-            });
-
             // ignore nodes we already visited
             if (decl.__visited) {
                 return;
@@ -79,26 +81,25 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
                     return result;
                 }
 
-                const images = extractList(value).map(split);
+                const {images, suffix} = parseValue(value);
 
-                // remember other part of property if it's 'background' property
-                const suffix = decl.prop === 'background' ? getSuffix(value) : '';
-
-                result.default = images[0].url + suffix;
+                result.default = images.url[0] + suffix;
 
                 // for each image add a media query
-                if (images.length > 1) {
-                    images.forEach(img => {
-                        if (img.size !== DPI_RATIO.x) {
-                            if (mediaQueryList.indexOf(img.size) === -1) {
-                                mediaQueryList.push(img.size);
+                if (images.url.length > 1) {
+                    for (var i=0, len = images.url.length; i < len; i++) {
+                        const size = images.size[i];
+
+                        if (size !== DPI_RATIO.x) {
+                            if (mediaQueryList.indexOf(size) === -1) {
+                                mediaQueryList.push(size);
                             }
-                            result[img.size] = img.url + suffix;
+                            result[size] = images.url[i] + suffix;
                         }
                         else {
-                            result.default = img.url + suffix;
+                            result.default = images.url[i] + suffix;
                         }
-                    });
+                    }
                 }
 
                 return result;

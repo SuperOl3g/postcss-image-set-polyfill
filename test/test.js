@@ -357,4 +357,33 @@ describe('postcss-image-set-polyfill', () => {
 
         test(input, output, done);
     });
+
+    it('parses multiple brackets constructions', done => {
+        const input =
+            `.foo {
+                background: image-set(url('../img/cancel@x1.png') 1x,
+                                      url('../img/cancel@x2.png') 2x,
+                                      url('../img/cancel@x3.png') 3x)
+                            no-repeat calc(100% - 5px) 50% / 32px;
+            }`;
+
+        const output =
+            `.foo {
+               background: url('../img/cancel@x1.png') no-repeat calc(100% - 5px) 50% / 32px;
+            }
+            @media (min-resolution: 192dpi) {
+                .foo {
+                    background: url('../img/cancel@x2.png') no-repeat calc(100% - 5px) 50% / 32px;
+                }
+            }
+            @media (min-resolution: 288dpi) {
+                .foo {
+                    background: url('../img/cancel@x3.png') no-repeat calc(100% - 5px) 50% / 32px;
+                }
+            }`;
+
+        test(input, output, done);
+    });
+
+
 });
