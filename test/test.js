@@ -141,7 +141,7 @@ describe('postcss-image-set-polyfill', () => {
 
 
         expect(() => postcss(imageSet).process(input).css)
-            .to.throw();
+            .to.throw(/Incorrect size value/);
 
         done();
     });

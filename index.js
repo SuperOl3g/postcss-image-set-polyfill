@@ -83,7 +83,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
                     return result;
                 }
 
-                const parsedValue = parseValue(value);
+                const parsedValue = parseValue(value, decl);
                 const images = parsedValue.images;
                 const suffix = parsedValue.suffix;
 
