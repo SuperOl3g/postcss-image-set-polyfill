@@ -1,3 +1,5 @@
+'use strict';
+
 const postcss = require('postcss');
 const mediaParser = require('postcss-media-query-parser').default;
 const valueParser = require('postcss-value-parser');
@@ -89,7 +91,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
 
                 // for each image add a media query
                 if (images.url.length > 1) {
-                    for (var i=0, len = images.url.length; i < len; i++) {
+                    for (let i = 0, len = images.url.length; i < len; i++) {
                         const size = images.size[i];
 
                         if (size !== DPI_RATIO.x) {
@@ -97,8 +99,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
                                 mediaQueryList.push(size);
                             }
                             result[size] = images.url[i] + suffix;
-                        }
-                        else {
+                        } else {
                             result.default = images.url[i] + suffix;
                         }
                     }
