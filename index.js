@@ -20,7 +20,12 @@ const convertSize = (size, decl) => {
     const m = size.match(/^([0-9|\.]+)(.*?)$/);
 
     if (m && DPI_RATIO[m[2]]) {
-        return Math.floor(m[1] * DPI_RATIO[m[2]]);
+        const dpi = m[1] * DPI_RATIO[m[2]];
+
+        return {
+            dpi: Math.floor(dpi),
+            pxRatio: Math.floor(dpi / DPI_RATIO.x * 100) / 100
+        };
     }
 
     throw decl.error('Incorrect size value', { word: m && m[2] });
@@ -73,7 +78,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             }
 
             const commaSeparatedValues = postcss.list.comma(decl.value);
-            const mediaQueryList = [];
+            const mediaQueryList = {};
 
             const parsedValues = commaSeparatedValues.map(value => {
                 const result = {};
@@ -92,11 +97,11 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
                 // for each image add a media query
                 if (images.url.length > 1) {
                     for (let i = 0, len = images.url.length; i < len; i++) {
-                        const size = images.size[i];
+                        const size = images.size[i].dpi;
 
                         if (size !== DPI_RATIO.x) {
-                            if (mediaQueryList.indexOf(size) === -1) {
-                                mediaQueryList.push(size);
+                            if (!mediaQueryList[size]) {
+                                mediaQueryList[size] = images.size[i].pxRatio;
                             }
                             result[size] = images.url[i] + suffix;
                         } else {
@@ -115,14 +120,17 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             const media = decl.parent.parent.params;
             const parsedMedia = media && mediaParser(media);
 
-            mediaQueryList
+            Object.keys(mediaQueryList)
                 .sort()
                 .forEach(size => {
                     const minResQuery = `(min-resolution: ${size}dpi)`;
+                    const minDPRQuery = `(-webkit-min-device-pixel-ratio: ${mediaQueryList[size]})`;
 
                     const paramStr = parsedMedia ?
-                        parsedMedia.nodes.map(queryNode => `${queryNode.value} and ${minResQuery}`).join(',') :
-                        minResQuery;
+                        parsedMedia.nodes
+                            .map(queryNode => `${queryNode.value} and ${minDPRQuery}, ${queryNode.value} and ${minResQuery}`)
+                            .join(',') :
+                        `${minDPRQuery}, ${minResQuery}`;
 
                     const atrule = postcss.atRule({
                         name: 'media',

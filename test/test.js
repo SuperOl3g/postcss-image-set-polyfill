@@ -44,12 +44,12 @@ describe('postcss-image-set-polyfill', () => {
             `a {
                 background-image: url(img/test.png);
             }
-            @media (min-resolution: 192dpi) {
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
                 a {
                     background-image: url(img/test-2x.png);
                 }
             }
-            @media (min-resolution: 600dpi) {
+            @media (-webkit-min-device-pixel-ratio: 6.25), (min-resolution: 600dpi) {
                 a {
                     background-image: url(my-img-print.png);
                 }
@@ -100,7 +100,7 @@ describe('postcss-image-set-polyfill', () => {
             `a {
                 background-image: url(img/test.png);
             }
-            @media (min-resolution: 192dpi) {
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
                 a {
                     background-image: url(img/test-2x.png);
                 }
@@ -121,7 +121,7 @@ describe('postcss-image-set-polyfill', () => {
             `a {
                 background-image: url(img/test.png);
             }
-            @media (min-resolution: 50dpi) {
+            @media (-webkit-min-device-pixel-ratio: 0.52), (min-resolution: 50dpi) {
                 a {
                     background-image: url(img/test-2x.png);
                 }
@@ -160,12 +160,12 @@ describe('postcss-image-set-polyfill', () => {
             `a {
                 background: url(../images/bck.png);
             }
-            @media (min-resolution: 192dpi) {
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
                 a {
                     background: url(../images/bck@2x.png);
                 }
             }
-            @media (min-resolution: 288dpi) {
+            @media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
                 a {
                     background: url(../images/bck@3x.png);
                 }
@@ -188,12 +188,12 @@ describe('postcss-image-set-polyfill', () => {
             `a {
                 background-image: url("img/test.png");
             }
-            @media (min-resolution: 192dpi) {
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
                 a {
                     background-image: url("img/test-2x.png");
                 }
             }
-            @media (min-resolution: 600dpi) {
+            @media (-webkit-min-device-pixel-ratio: 6.25), (min-resolution: 600dpi) {
                 a {
                     background-image: url("my-img-print.png");
                 }
@@ -215,12 +215,12 @@ describe('postcss-image-set-polyfill', () => {
             `a {
                 background-image: url(img/test.png);
             }
-            @media (min-resolution: 192dpi){
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi){
                 a {
                     background-image: url(img/test-2x.png);
                 }
             }
-            @media (min-resolution: 600dpi){
+            @media (-webkit-min-device-pixel-ratio: 6.25), (min-resolution: 600dpi){
                 a {
                     background-image: url(my-img-print.png);
                 }
@@ -247,12 +247,14 @@ describe('postcss-image-set-polyfill', () => {
                     background-image: url(img/test.png);
                 }
             }
-            @media (min-width: 1000px) and (min-resolution: 192dpi) {
+            @media (min-width: 1000px) and (-webkit-min-device-pixel-ratio: 2), 
+                (min-width: 1000px) and (min-resolution: 192dpi) {
                 a {
                     background-image: url(img/test-2x.png);
                 }
             }
-            @media (min-width: 1000px) and (min-resolution: 600dpi) {
+            @media (min-width: 1000px) and (-webkit-min-device-pixel-ratio: 6.25),
+                (min-width: 1000px) and (min-resolution: 600dpi) {
                 a {
                     background-image: url(my-img-print.png);
                 }
@@ -260,6 +262,79 @@ describe('postcss-image-set-polyfill', () => {
 
         test(input, output, done);
     });
+
+    it('parses the image-set in media query with "AND"', done => {
+        const input =
+            `@media (min-width: 768px) and (max-width: 1024px) {
+                a {
+                    background-image: image-set(
+                        url(img/test.png) 1x,
+                        url(img/test-2x.png) 2x,
+                        url(my-img-print.png) 600dpi
+                    );
+                }
+            }`;
+
+        const output =
+            `@media (min-width: 768px) and (max-width: 1024px) {
+                a {
+                    background-image: url(img/test.png);
+                }
+            }
+            @media (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2),
+                (min-width: 768px) and (max-width: 1024px) and (min-resolution: 192dpi) {
+                a {
+                    background-image: url(img/test-2x.png);
+                }
+            }
+            @media (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 6.25),
+                (min-width: 768px) and (max-width: 1024px) and (min-resolution: 600dpi) {
+                a {
+                    background-image: url(my-img-print.png);
+                }
+            }`;
+
+        test(input, output, done);
+    });
+
+    it('parses the image-set in media query with "OR"', done => {
+        const input =
+            `@media (min-width: 768px), (max-width: 1024px) {
+                a {
+                    background-image: image-set(
+                        url(img/test.png) 1x,
+                        url(img/test-2x.png) 2x,
+                        url(my-img-print.png) 600dpi
+                    );
+                }
+            }`;
+
+        const output =
+            `@media (min-width: 768px), (max-width: 1024px) {
+                a {
+                    background-image: url(img/test.png);
+                }
+            }
+            @media (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2),
+                (min-width: 768px) and (min-resolution: 192dpi),
+                (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2),
+                (max-width: 1024px) and (min-resolution: 192dpi) {
+                a {
+                    background-image: url(img/test-2x.png);
+                }
+            }
+            @media (min-width: 768px) and (-webkit-min-device-pixel-ratio: 6.25),
+                (min-width: 768px) and (min-resolution: 600dpi),
+                (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 6.25),
+                (max-width: 1024px) and (min-resolution: 600dpi) {
+                a {
+                    background-image: url(my-img-print.png);
+                }
+            }`;
+
+        test(input, output, done);
+    });
+
 
     it('parses the image-set in background property', done => {
         const input =
@@ -274,12 +349,12 @@ describe('postcss-image-set-polyfill', () => {
             `a {
                 background: url(img/test.png) top left no-repeat red;
             }
-            @media (min-resolution: 192dpi) {
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
                 a {
                     background: url(img/test-2x.png) top left no-repeat red;
                 }
             }
-            @media (min-resolution: 600dpi) {
+            @media (-webkit-min-device-pixel-ratio: 6.25), (min-resolution: 600dpi) {
                 a {
                     background: url(my-img-print.png) top left no-repeat red;
                 }
@@ -316,7 +391,7 @@ describe('postcss-image-set-polyfill', () => {
                         rgba(255, 0, 0, 0.5)
                     );
             }
-            @media (min-resolution: 192dpi) {
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
                 a {
                     background:
                         url(../images/overlay@2x.png) no-repeat center,
@@ -344,12 +419,12 @@ describe('postcss-image-set-polyfill', () => {
             `a {
                 background-image: url(img/test.png);
             }
-            @media (min-resolution: 124dpi) {
+            @media (-webkit-min-device-pixel-ratio: 1.3), (min-resolution: 124dpi) {
                 a {
                     background-image: url(img/test-1.3x.png);
                 }
             }
-            @media (min-resolution: 144dpi) {
+            @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
                 a {
                     background-image: url(img/test-1.5x.png);
                 }
@@ -371,12 +446,12 @@ describe('postcss-image-set-polyfill', () => {
             `.foo {
                background: url('../img/cancel@x1.png') no-repeat calc(100% - 5px) 50% / 32px;
             }
-            @media (min-resolution: 192dpi) {
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
                 .foo {
                     background: url('../img/cancel@x2.png') no-repeat calc(100% - 5px) 50% / 32px;
                 }
             }
-            @media (min-resolution: 288dpi) {
+            @media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
                 .foo {
                     background: url('../img/cancel@x3.png') no-repeat calc(100% - 5px) 50% / 32px;
                 }
