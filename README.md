@@ -20,13 +20,14 @@
     background-image: url(img/test.png);
 }
 
-@media (min-resolution: 192dpi) {
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
     .foo {
         background-image: url(img/test-2x.png);
     }
 }
 
-@media (min-resolution: 600dpi) {
+
+@media (-webkit-min-device-pixel-ratio: 6.25), (min-resolution: 600dpi) {
     .foo {
         background-image: url(my-img-print.png);
     }
