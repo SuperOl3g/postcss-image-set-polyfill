@@ -1,4 +1,4 @@
-# 0.4.4 (July 16, 2017)
+# 0.4.4 (September 7, 2017)
 - added media query for safari support [#17](https://github.com/SuperOl3g/postcss-image-set-polyfill/issues/17)
 
 # 0.4.3 (July 16, 2017)
