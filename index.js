@@ -40,15 +40,15 @@ const parseValue = (value, decl) => {
     const imageSetChunks = valueChunks.shift().nodes;
 
     const sizes = imageSetChunks
-            .filter(chunk => chunk.type === 'word')
-            .map(chunk => convertSize(stringify(chunk), decl));
+        .filter(chunk => chunk.type === 'word')
+        .map(chunk => convertSize(stringify(chunk), decl));
 
     const urls = imageSetChunks
-            .filter(chunk => chunk.type === 'function' || chunk.type === 'string')
-            .map(chunk => {
-                const str = stringify(chunk);
-                return chunk.type === 'string' ? `url(${str})` : str;
-            });
+        .filter(chunk => chunk.type === 'function' || chunk.type === 'string')
+        .map(chunk => {
+            const str = stringify(chunk);
+            return chunk.type === 'string' ? `url(${str})` : str;
+        });
 
     const suffix = valueChunks.length ?
         valueChunks
