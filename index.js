@@ -11,6 +11,8 @@ const DPI_RATIO = {
     dpi: 1
 };
 
+const IMAGE_SET_FUNC_REGEX = /(^|[^\w-])(-webkit-)?image-set\([\W\w]*\)/
+
 // convert all sizes to dpi for sorting
 const convertSize = (size, decl) => {
     if (!size) {
@@ -73,7 +75,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             }
 
             // make sure we have image-set
-            if (!decl.value || decl.value.indexOf('image-set') === -1) {
+            if (!IMAGE_SET_FUNC_REGEX.test(decl.value)) {
                 return;
             }
 
@@ -83,7 +85,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             const parsedValues = commaSeparatedValues.map(value => {
                 const result = {};
 
-                if (value.indexOf('image-set') === -1) {
+                if (!IMAGE_SET_FUNC_REGEX.test(value)) {
                     result.default = value;
                     return result;
                 }
