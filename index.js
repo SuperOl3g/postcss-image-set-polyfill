@@ -118,9 +118,14 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             decl.value = parsedValues.map(val => val.default).join(',');
 
             const parent = decl.parent;
+            const afterNodes = parent.nodes.slice(parent.nodes.indexOf(decl) + 1)
+            const atruleKeys = Object.keys(mediaQueryList).sort()
 
-            const atrules = Object.keys(mediaQueryList)
-                .sort()
+            if (!atruleKeys.length) {
+                return
+            }
+
+            const atrules = atruleKeys
                 .map(size => {
                     const minResQuery = `(min-resolution: ${size}dpi)`;
                     const minDPRQuery = `(-webkit-min-device-pixel-ratio: ${mediaQueryList[size]})`;
@@ -148,7 +153,15 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
                     return atrule;
                 });
 
-                parent.after(atrules);
+            if (afterNodes.length) {
+                const parentClone = parent.clone().removeAll();
+
+                parentClone.append(afterNodes);
+
+                atrules.push(parentClone);
+            }
+
+            parent.after(atrules);
         });
     }
 );
