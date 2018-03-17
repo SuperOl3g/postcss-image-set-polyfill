@@ -66,7 +66,7 @@ const parseValue = (value, decl) => {
 
 module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
     css => {
-        css.walkDecls(/^(background-image|background)$/, decl => {
+        css.walkDecls(decl => {
             // ignore nodes we already visited
             if (decl.__visited) {
                 return;
