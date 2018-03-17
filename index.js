@@ -1,7 +1,6 @@
 'use strict';
 
 const postcss = require('postcss');
-const mediaParser = require('postcss-media-query-parser').default;
 const valueParser = require('postcss-value-parser');
 
 const DPI_RATIO = {
@@ -118,21 +117,15 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             // add the default image to the decl
             decl.value = parsedValues.map(val => val.default).join(',');
 
-            // check for the media queries
-            const media = decl.parent.parent.params;
-            const parsedMedia = media && mediaParser(media);
+            const parent = decl.parent;
 
-            Object.keys(mediaQueryList)
+            const atrules = Object.keys(mediaQueryList)
                 .sort()
-                .forEach(size => {
+                .map(size => {
                     const minResQuery = `(min-resolution: ${size}dpi)`;
                     const minDPRQuery = `(-webkit-min-device-pixel-ratio: ${mediaQueryList[size]})`;
 
-                    const paramStr = parsedMedia ?
-                        parsedMedia.nodes
-                            .map(queryNode => `${queryNode.value} and ${minDPRQuery}, ${queryNode.value} and ${minResQuery}`)
-                            .join(',') :
-                        `${minDPRQuery}, ${minResQuery}`;
+                    const paramStr = `${minDPRQuery}, ${minResQuery}`;
 
                     const atrule = postcss.atRule({
                         name: 'media',
@@ -140,22 +133,22 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
                     });
 
                     // clone empty parent with only relevant decls
-                    const parent = decl.parent.clone({
-                        nodes: []
-                    });
+                    const parentClone = parent.clone().removeAll();
 
-                    const d = decl.clone({
+                    const declClone = decl.clone({
                         value: parsedValues.map(val => val[size] || val.default).join(',')
                     });
 
                     // mark nodes as visited by us
-                    d.__visited = true;
+                    declClone.__visited = true;
 
-                    parent.append(d);
-                    atrule.append(parent);
+                    parentClone.append(declClone);
+                    atrule.append(parentClone);
 
-                    decl.root().append(atrule);
+                    return atrule;
                 });
+
+                parent.after(atrules);
         });
     }
 );

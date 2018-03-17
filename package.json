@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "postcss": "^6.0.20",
-    "postcss-media-query-parser": "^0.2.3",
     "postcss-value-parser": "^3.3.0"
   },
   "devDependencies": {
