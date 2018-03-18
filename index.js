@@ -68,11 +68,6 @@ const parseValue = (value, decl) => {
 module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
     css => {
         css.walkDecls(decl => {
-            // ignore nodes we already visited
-            if (decl.__visited) {
-                return;
-            }
-
             // make sure we have image-set
             if (!IMAGE_SET_FUNC_REGEX.test(decl.value)) {
                 return;
@@ -115,16 +110,15 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             });
 
             // add the default image to the decl
-            decl.value = parsedValues.map(val => val.default).join(',');
+            const fallbackDecl = decl.clone({
+                value: parsedValues.map(val => val.default).join(',')
+            });
 
             const parent = decl.parent;
-            const afterNodes = parent.nodes.slice(parent.nodes.indexOf(decl) + 1)
-            const atruleKeys = Object.keys(mediaQueryList).sort()
+            const beforeNodes = parent.nodes.slice(0, parent.nodes.indexOf(decl));
+            const atruleKeys = Object.keys(mediaQueryList).sort();
 
-            if (!atruleKeys.length) {
-                return
-            }
-
+            // fallback atrules
             const atrules = atruleKeys
                 .map(size => {
                     const minResQuery = `(min-resolution: ${size}dpi)`;
@@ -144,24 +138,28 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
                         value: parsedValues.map(val => val[size] || val.default).join(',')
                     });
 
-                    // mark nodes as visited by us
-                    declClone.__visited = true;
-
                     parentClone.append(declClone);
                     atrule.append(parentClone);
 
                     return atrule;
                 });
 
-            if (afterNodes.length) {
-                const parentClone = parent.clone().removeAll();
+            // clone parent container
+            const parentClone = parent.clone().removeAll();
 
-                parentClone.append(afterNodes);
+            // append the previous nodes and the fallback to the cloned parent
+            parentClone.append(beforeNodes.concat(fallbackDecl));
 
-                atrules.push(parentClone);
+            // insert the cloned parent and fallback atrules before the parent
+            parent.before([parentClone].concat(atrules));
+
+            // remove the original declaration
+            decl.remove();
+
+            // cleanup leftover emptied parent
+            if (!parent.nodes.length) {
+                parent.remove();
             }
-
-            parent.after(atrules);
         });
     }
 );
