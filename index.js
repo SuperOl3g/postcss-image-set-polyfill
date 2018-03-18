@@ -1,7 +1,6 @@
 'use strict';
 
 const postcss = require('postcss');
-const mediaParser = require('postcss-media-query-parser').default;
 const valueParser = require('postcss-value-parser');
 
 const DPI_RATIO = {
@@ -10,6 +9,8 @@ const DPI_RATIO = {
     dpcm: 2.54,
     dpi: 1
 };
+
+const IMAGE_SET_FUNC_REGEX = /(^|[^\w-])(-webkit-)?image-set\([\W\w]*\)/
 
 // convert all sizes to dpi for sorting
 const convertSize = (size, decl) => {
@@ -39,15 +40,15 @@ const parseValue = (value, decl) => {
     const imageSetChunks = valueChunks.shift().nodes;
 
     const sizes = imageSetChunks
-            .filter(chunk => chunk.type === 'word')
-            .map(chunk => convertSize(stringify(chunk), decl));
+        .filter(chunk => chunk.type === 'word')
+        .map(chunk => convertSize(stringify(chunk), decl));
 
     const urls = imageSetChunks
-            .filter(chunk => chunk.type === 'function' || chunk.type === 'string')
-            .map(chunk => {
-                const str = stringify(chunk);
-                return chunk.type === 'string' ? `url(${str})` : str;
-            });
+        .filter(chunk => chunk.type === 'function' || chunk.type === 'string')
+        .map(chunk => {
+            const str = stringify(chunk);
+            return chunk.type === 'string' ? `url(${str})` : str;
+        });
 
     const suffix = valueChunks.length ?
         valueChunks
@@ -64,16 +65,13 @@ const parseValue = (value, decl) => {
     };
 };
 
-module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
-    css => {
-        css.walkDecls(/^(background-image|background)$/, decl => {
-            // ignore nodes we already visited
-            if (decl.__visited) {
-                return;
-            }
+module.exports = postcss.plugin('postcss-image-set-polyfill', opts => {
+    const preserve = Boolean(Object(opts).preserve);
 
+    return css => {
+        css.walkDecls(decl => {
             // make sure we have image-set
-            if (!decl.value || decl.value.indexOf('image-set') === -1) {
+            if (!IMAGE_SET_FUNC_REGEX.test(decl.value)) {
                 return;
             }
 
@@ -83,7 +81,7 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             const parsedValues = commaSeparatedValues.map(value => {
                 const result = {};
 
-                if (value.indexOf('image-set') === -1) {
+                if (!IMAGE_SET_FUNC_REGEX.test(value)) {
                     result.default = value;
                     return result;
                 }
@@ -114,23 +112,21 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             });
 
             // add the default image to the decl
-            decl.value = parsedValues.map(val => val.default).join(',');
+            const fallbackDecl = decl.clone({
+                value: parsedValues.map(val => val.default).join(',')
+            });
 
-            // check for the media queries
-            const media = decl.parent.parent.params;
-            const parsedMedia = media && mediaParser(media);
+            const parent = decl.parent;
+            const beforeNodes = parent.nodes.slice(0, parent.nodes.indexOf(decl));
+            const atruleKeys = Object.keys(mediaQueryList).sort();
 
-            Object.keys(mediaQueryList)
-                .sort()
-                .forEach(size => {
+            // fallback atrules
+            const atrules = atruleKeys
+                .map(size => {
                     const minResQuery = `(min-resolution: ${size}dpi)`;
                     const minDPRQuery = `(-webkit-min-device-pixel-ratio: ${mediaQueryList[size]})`;
 
-                    const paramStr = parsedMedia ?
-                        parsedMedia.nodes
-                            .map(queryNode => `${queryNode.value} and ${minDPRQuery}, ${queryNode.value} and ${minResQuery}`)
-                            .join(',') :
-                        `${minDPRQuery}, ${minResQuery}`;
+                    const paramStr = `${minDPRQuery}, ${minResQuery}`;
 
                     const atrule = postcss.atRule({
                         name: 'media',
@@ -138,22 +134,36 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
                     });
 
                     // clone empty parent with only relevant decls
-                    const parent = decl.parent.clone({
-                        nodes: []
-                    });
+                    const parentClone = parent.clone().removeAll();
 
-                    const d = decl.clone({
+                    const declClone = decl.clone({
                         value: parsedValues.map(val => val[size] || val.default).join(',')
                     });
 
-                    // mark nodes as visited by us
-                    d.__visited = true;
+                    parentClone.append(declClone);
+                    atrule.append(parentClone);
 
-                    parent.append(d);
-                    atrule.append(parent);
-
-                    decl.root().append(atrule);
+                    return atrule;
                 });
+
+            // clone parent container
+            const parentClone = parent.clone().removeAll();
+
+            // append the previous nodes and the fallback to the cloned parent
+            parentClone.append(beforeNodes.concat(fallbackDecl));
+
+            // insert the cloned parent and fallback atrules before the parent
+            parent.before([parentClone].concat(atrules));
+
+            // conditionally remove the original declaration
+            if (!preserve) {
+                decl.remove();
+
+                // cleanup leftover emptied parent
+                if (!parent.nodes.length) {
+                    parent.remove();
+                }
+            }
         });
-    }
-);
+    };
+});

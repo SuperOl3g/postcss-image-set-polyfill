@@ -5,8 +5,8 @@ const expect  = require('chai').expect;
 const postcss = require('postcss');
 const imageSet = require('../');
 
-const test = function(input, output, done) {
-    expect(postcss(imageSet).process(input).css.replace(/[ \n]/g, ''))
+const test = function(input, output, done, opts) {
+    expect(postcss(imageSet(opts)).process(input).css.replace(/[ \n]/g, ''))
         .to.eql(output.replace(/[ \n]/g, ''));
 
     done();
@@ -29,6 +29,64 @@ describe('postcss-image-set-polyfill', () => {
             }`;
 
         test(input, input, done);
+    });
+
+    it('parses a simple image-set', done => {
+        const input =
+            `a {
+                order: 1;
+                background-image: image-set(
+                    url(img/test.png) 1x,
+                    url(img/test-2x.png) 2x
+                );
+                order: 2;
+            }`;
+        const output =
+            `a {
+                order: 1;
+                background-image: url(img/test.png);
+            }
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+                a {
+                    background-image: url(img/test-2x.png);
+                }
+            }
+            a {
+                order: 2;
+            }`;
+
+        test(input, output, done);
+    });
+
+    it('parses a simple image-set with preserve option', done => {
+        const input =
+            `a {
+                order: 1;
+                background-image: image-set(
+                    url(img/test.png) 1x,
+                    url(img/test-2x.png) 2x
+                );
+                order: 2;
+            }`;
+        const output =
+            `a {
+                order: 1;
+                background-image: url(img/test.png);
+            }
+            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+                a {
+                    background-image: url(img/test-2x.png);
+                }
+            }
+            a {
+                background-image: image-set(
+                    url(img/test.png) 1x,
+                    url(img/test-2x.png) 2x
+                );
+                order: 2;
+            }`;
+
+        test(input, output, done, { preserve: true });
     });
 
     it('parses the image-set', done => {
@@ -246,17 +304,15 @@ describe('postcss-image-set-polyfill', () => {
                 a {
                     background-image: url(img/test.png);
                 }
-            }
-            @media (min-width: 1000px) and (-webkit-min-device-pixel-ratio: 2), 
-                (min-width: 1000px) and (min-resolution: 192dpi) {
-                a {
-                    background-image: url(img/test-2x.png);
+                @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+                    a {
+                        background-image:url(img/test-2x.png);
+                    }
                 }
-            }
-            @media (min-width: 1000px) and (-webkit-min-device-pixel-ratio: 6.25),
-                (min-width: 1000px) and (min-resolution: 600dpi) {
-                a {
-                    background-image: url(my-img-print.png);
+                @media (-webkit-min-device-pixel-ratio: 6.25), (min-resolution: 600dpi) {
+                    a {
+                        background-image: url(my-img-print.png);
+                    }
                 }
             }`;
 
@@ -280,17 +336,17 @@ describe('postcss-image-set-polyfill', () => {
                 a {
                     background-image: url(img/test.png);
                 }
-            }
-            @media (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2),
-                (min-width: 768px) and (max-width: 1024px) and (min-resolution: 192dpi) {
-                a {
-                    background-image: url(img/test-2x.png);
+                @media (-webkit-min-device-pixel-ratio: 2),
+                    (min-resolution: 192dpi) {
+                    a {
+                        background-image: url(img/test-2x.png);
+                    }
                 }
-            }
-            @media (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 6.25),
-                (min-width: 768px) and (max-width: 1024px) and (min-resolution: 600dpi) {
-                a {
-                    background-image: url(my-img-print.png);
+                @media (-webkit-min-device-pixel-ratio: 6.25),
+                    (min-resolution: 600dpi) {
+                    a {
+                        background-image: url(my-img-print.png);
+                    }
                 }
             }`;
 
@@ -314,21 +370,17 @@ describe('postcss-image-set-polyfill', () => {
                 a {
                     background-image: url(img/test.png);
                 }
-            }
-            @media (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2),
-                (min-width: 768px) and (min-resolution: 192dpi),
-                (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2),
-                (max-width: 1024px) and (min-resolution: 192dpi) {
-                a {
-                    background-image: url(img/test-2x.png);
+                @media (-webkit-min-device-pixel-ratio: 2),
+                    (min-resolution: 192dpi) {
+                    a {
+                        background-image: url(img/test-2x.png);
+                    }
                 }
-            }
-            @media (min-width: 768px) and (-webkit-min-device-pixel-ratio: 6.25),
-                (min-width: 768px) and (min-resolution: 600dpi),
-                (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 6.25),
-                (max-width: 1024px) and (min-resolution: 600dpi) {
-                a {
-                    background-image: url(my-img-print.png);
+                @media (-webkit-min-device-pixel-ratio: 6.25),
+                    (min-resolution: 600dpi) {
+                    a {
+                        background-image: url(my-img-print.png);
+                    }
                 }
             }`;
 
