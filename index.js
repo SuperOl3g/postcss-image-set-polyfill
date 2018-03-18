@@ -65,8 +65,10 @@ const parseValue = (value, decl) => {
     };
 };
 
-module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
-    css => {
+module.exports = postcss.plugin('postcss-image-set-polyfill', opts => {
+    const preserve = Boolean(Object(opts).preserve);
+
+    return css => {
         css.walkDecls(decl => {
             // make sure we have image-set
             if (!IMAGE_SET_FUNC_REGEX.test(decl.value)) {
@@ -153,13 +155,15 @@ module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
             // insert the cloned parent and fallback atrules before the parent
             parent.before([parentClone].concat(atrules));
 
-            // remove the original declaration
-            decl.remove();
+            // conditionally remove the original declaration
+            if (!preserve) {
+                decl.remove();
 
-            // cleanup leftover emptied parent
-            if (!parent.nodes.length) {
-                parent.remove();
+                // cleanup leftover emptied parent
+                if (!parent.nodes.length) {
+                    parent.remove();
+                }
             }
         });
-    }
-);
+    };
+});
