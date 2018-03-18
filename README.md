@@ -6,31 +6,35 @@
 [PostCSS]: https://github.com/postcss/postcss
 
 ```css
-/* Input example */
 .foo {
-    background-image: image-set(url(img/test.png) 1x,
-                                url(img/test-2x.png) 2x,
-                                url(my-img-print.png) 600dpi);
+  align-items: center;
+  background-image: image-set(url(img/test.png) 1x,
+                              url(img/test-2x.png) 2x,
+                              url(my-img-print.png) 600dpi);
+  color: black;
 }
-```
 
-```css
-/* Output example */
+/* becomes */
+
 .foo {
-    background-image: url(img/test.png);
+  align-items: center;
+  background-image: url(img/test.png);
 }
 
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .foo {
-        background-image: url(img/test-2x.png);
-    }
+  .foo {
+    background-image: url(img/test-2x.png);
+  }
 }
 
-
 @media (-webkit-min-device-pixel-ratio: 6.25), (min-resolution: 600dpi) {
-    .foo {
-        background-image: url(my-img-print.png);
-    }
+  .foo {
+    background-image: url(my-img-print.png);
+  }
+}
+
+.foo {
+  color: black;
 }
 ```
 <a href="https://astexplorer.net/#/gist/86d1248cc4628f850454d3191c95efec/3bbf606fe0ef2662917a845aa16a715d06435650" target="_blank">→Try it online←</a>
@@ -52,6 +56,45 @@ postcss([postcssImageSet]).process(YOUR_CSS, /* options */);
 
 See [PostCSS] docs for examples for your environment.
 
+## Option
+
+### preserve
+
+The `preserve` option determines whether the original `image-set()` rule should
+or not should not be removed. By default, the original `image-set()` rule is
+removed.
+
+```js
+postcssImageSet({ preserve: true })
+```
+
+```css
+.foo {
+  align-items: center;
+  background-image: image-set(url(img/test.png) 1x,
+                              url(img/test-2x.png) 2x);
+  color: black;
+}
+
+/* becomes */
+
+.foo {
+  align-items: center;
+  background-image: url(img/test.png);
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .foo {
+    background-image: url(img/test-2x.png);
+  }
+}
+
+.foo {
+  background-image: image-set(url(img/test.png) 1x,
+                              url(img/test-2x.png) 2x);
+  color: black;
+}
+```
 
 ### ⚠️️ Warning
 
