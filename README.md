@@ -42,6 +42,8 @@
 
 `npm i postcss-image-set-polyfill -D`
 
+> ️❕ NodeJS version must be 6+.
+
 ## Usage
 
 ```js
