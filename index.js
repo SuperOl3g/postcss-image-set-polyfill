@@ -1,6 +1,3 @@
-'use strict';
-
-const postcss = require('postcss');
 const mediaParser = require('postcss-media-query-parser').default;
 const valueParser = require('postcss-value-parser');
 
@@ -64,96 +61,96 @@ const parseValue = (value, decl) => {
     };
 };
 
-module.exports = postcss.plugin('postcss-image-set-polyfill', () =>
-    css => {
-        css.walkDecls(/^(background-image|background)$/, decl => {
-            // ignore nodes we already visited
-            if (decl.__visited) {
-                return;
-            }
+function transform(decl, {list, atRule}) {
+    // make sure we have image-set
+    if (!decl.value || decl.value.indexOf('image-set') === -1) {
+        return;
+    }
 
-            // make sure we have image-set
-            if (!decl.value || decl.value.indexOf('image-set') === -1) {
-                return;
-            }
+    const commaSeparatedValues = list.comma(decl.value);
+    const mediaQueryList = {};
 
-            const commaSeparatedValues = postcss.list.comma(decl.value);
-            const mediaQueryList = {};
+    const parsedValues = commaSeparatedValues.map(value => {
+        const result = {};
 
-            const parsedValues = commaSeparatedValues.map(value => {
-                const result = {};
+        if (value.indexOf('image-set') === -1) {
+            result.default = value;
+            return result;
+        }
 
-                if (value.indexOf('image-set') === -1) {
-                    result.default = value;
-                    return result;
-                }
+        const parsedValue = parseValue(value, decl);
+        const images = parsedValue.images;
+        const suffix = parsedValue.suffix;
 
-                const parsedValue = parseValue(value, decl);
-                const images = parsedValue.images;
-                const suffix = parsedValue.suffix;
+        result.default = images.url[0] + suffix;
 
-                result.default = images.url[0] + suffix;
+        // for each image add a media query
+        if (images.url.length > 1) {
+            for (let i = 0, len = images.url.length; i < len; i++) {
+                const size = images.size[i].dpi;
 
-                // for each image add a media query
-                if (images.url.length > 1) {
-                    for (let i = 0, len = images.url.length; i < len; i++) {
-                        const size = images.size[i].dpi;
-
-                        if (size !== DPI_RATIO.x) {
-                            if (!mediaQueryList[size]) {
-                                mediaQueryList[size] = images.size[i].pxRatio;
-                            }
-                            result[size] = images.url[i] + suffix;
-                        } else {
-                            result.default = images.url[i] + suffix;
-                        }
+                if (size !== DPI_RATIO.x) {
+                    if (!mediaQueryList[size]) {
+                        mediaQueryList[size] = images.size[i].pxRatio;
                     }
+                    result[size] = images.url[i] + suffix;
+                } else {
+                    result.default = images.url[i] + suffix;
                 }
+            }
+        }
 
-                return result;
+        return result;
+    });
+
+    // add the default image to the decl
+    decl.value = parsedValues.map(val => val.default).join(',');
+
+    // check for the media queries
+    const media = decl.parent.parent.params;
+    const parsedMedia = media && mediaParser(media);
+
+    Object.keys(mediaQueryList)
+        .sort()
+        .forEach(size => {
+            const minResQuery = `(min-resolution: ${size}dpi)`;
+            const minDPRQuery = `(-webkit-min-device-pixel-ratio: ${mediaQueryList[size]})`;
+
+            const paramStr = parsedMedia ?
+                parsedMedia.nodes
+                    .map(queryNode => `${queryNode.value} and ${minDPRQuery}, ${queryNode.value} and ${minResQuery}`)
+                    .join(',') :
+                `${minDPRQuery}, ${minResQuery}`;
+
+            const atrule = atRule({
+                name: 'media',
+                params: paramStr
             });
 
-            // add the default image to the decl
-            decl.value = parsedValues.map(val => val.default).join(',');
+            // clone empty parent with only relevant decls
+            const parent = decl.parent.clone({
+                nodes: []
+            });
 
-            // check for the media queries
-            const media = decl.parent.parent.params;
-            const parsedMedia = media && mediaParser(media);
+            const d = decl.clone({
+                value: parsedValues.map(val => val[size] || val.default).join(',')
+            });
 
-            Object.keys(mediaQueryList)
-                .sort()
-                .forEach(size => {
-                    const minResQuery = `(min-resolution: ${size}dpi)`;
-                    const minDPRQuery = `(-webkit-min-device-pixel-ratio: ${mediaQueryList[size]})`;
+            parent.append(d);
+            atrule.append(parent);
 
-                    const paramStr = parsedMedia ?
-                        parsedMedia.nodes
-                            .map(queryNode => `${queryNode.value} and ${minDPRQuery}, ${queryNode.value} and ${minResQuery}`)
-                            .join(',') :
-                        `${minDPRQuery}, ${minResQuery}`;
-
-                    const atrule = postcss.atRule({
-                        name: 'media',
-                        params: paramStr
-                    });
-
-                    // clone empty parent with only relevant decls
-                    const parent = decl.parent.clone({
-                        nodes: []
-                    });
-
-                    const d = decl.clone({
-                        value: parsedValues.map(val => val[size] || val.default).join(',')
-                    });
-
-                    // mark nodes as visited by us
-                    d.__visited = true;
-
-                    parent.append(d);
-                    atrule.append(parent);
-
-                    decl.root().append(atrule);
-                });
+            decl.root().append(atrule);
         });
-    }
-);
+}
+
+module.exports = () => {
+    return {
+        postcssPlugin: 'postcss-image-set-polyfill',
+        Declaration: {
+            "background-image": transform,
+            background: transform
+        }
+    };
+};
+
+module.exports.postcss = true;

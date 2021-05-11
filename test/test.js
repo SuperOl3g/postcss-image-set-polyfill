@@ -5,33 +5,33 @@ const expect  = require('chai').expect;
 const postcss = require('postcss');
 const imageSet = require('../');
 
-const test = function(input, output, done) {
-    expect(postcss(imageSet).process(input).css.replace(/[ \n]/g, ''))
-        .to.eql(output.replace(/[ \n]/g, ''));
+const test = async function(input, output) {
+    const result = await postcss([imageSet]).process(input, {from: undefined});
 
-    done();
+    expect(result.css.replace(/[ \n]/g, ''))
+        .to.eql(output.replace(/[ \n]/g, ''));
 };
 
 describe('postcss-image-set-polyfill', () => {
-    it('don\'t break simple background-image property', done => {
+    it('don\'t break simple background-image property', async () => {
         const input =
             `a {
                 background-image: url("img/test.png");
             }`;
 
-        test(input, input, done);
+        return test(input, input);
     });
 
-    it('don\'t break simple background property', done => {
+    it('don\'t break simple background property', async () => {
         const input =
             `a {
                 background: url(my-img-print.png) top left no-repeat red;
             }`;
 
-        test(input, input, done);
+        return test(input, input);
     });
 
-    it('parses the image-set', done => {
+    it('parses the image-set', async () => {
         const input =
             `a{
                 background-image: image-set(
@@ -55,10 +55,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses the image-set with only 1x', done => {
+    it('parses the image-set with only 1x', async () => {
         const input =
             `a{
                 background-image: image-set(
@@ -70,10 +70,10 @@ describe('postcss-image-set-polyfill', () => {
                 background-image: url(img/test.png);
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses the image-set with only 2x', done => {
+    it('parses the image-set with only 2x', async () => {
         const input =
             `a{
                 background-image: image-set(
@@ -85,10 +85,10 @@ describe('postcss-image-set-polyfill', () => {
                 background-image: url(img/test.png);
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses dppx unit', done => {
+    it('parses dppx unit', async () => {
         const input =
             `a{
                 background-image: image-set(
@@ -106,10 +106,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses dpcm unit', done => {
+    it('parses dpcm unit', async () => {
         const input =
             `a{
                 background-image: image-set(
@@ -127,7 +127,7 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
     it('throws exeption with unknown units', done => {
@@ -147,7 +147,7 @@ describe('postcss-image-set-polyfill', () => {
     });
 
 
-    it('generate styles in correct order', done => {
+    it('generate styles in correct order', async () => {
         const input =
             `a {
                 background: image-set(
@@ -171,10 +171,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses the image-set without url', done => {
+    it('parses the image-set without url', async () => {
         const input =
             `a {
                 background-image: image-set(
@@ -199,10 +199,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses the -webkit-image-set', done => {
+    it('parses the -webkit-image-set', async () => {
         const input =
             `a {
                 background-image: -webkit-image-set(
@@ -226,10 +226,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses the image-set in media query', done => {
+    it('parses the image-set in media query', async () => {
         const input =
             `@media (min-width: 1000px) {
                 a {
@@ -260,10 +260,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses the image-set in media query with "AND"', done => {
+    it('parses the image-set in media query with "AND"', async () => {
         const input =
             `@media (min-width: 768px) and (max-width: 1024px) {
                 a {
@@ -294,10 +294,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses the image-set in media query with "OR"', done => {
+    it('parses the image-set in media query with "OR"', async () => {
         const input =
             `@media (min-width: 768px), (max-width: 1024px) {
                 a {
@@ -332,11 +332,11 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
 
-    it('parses the image-set in background property', done => {
+    it('parses the image-set in background property', async () => {
         const input =
             `a{
                 background: image-set(
@@ -360,10 +360,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses multiple values in background property', done => {
+    it('parses multiple values in background property', async () => {
         const input =
             `a {
                 background:
@@ -403,10 +403,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses densities between 1x and 2x', done => {
+    it('parses densities between 1x and 2x', async () => {
         const input =
             `a{
                 background-image: image-set(
@@ -430,10 +430,10 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
-    it('parses multiple brackets constructions', done => {
+    it('parses multiple brackets constructions', async () => {
         const input =
             `.foo {
                 background: image-set(url('../img/cancel@x1.png') 1x,
@@ -457,7 +457,7 @@ describe('postcss-image-set-polyfill', () => {
                 }
             }`;
 
-        test(input, output, done);
+        return test(input, output);
     });
 
 
