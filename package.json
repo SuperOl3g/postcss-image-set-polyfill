@@ -13,23 +13,26 @@
   "author": "SuperOl3g <oleglykasov@gmail.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=10"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/SuperOl3g/postcss-image-set-polyfill.git"
   },
   "dependencies": {
-    "postcss": "^7.0.14",
     "postcss-media-query-parser": "^0.2.3",
-    "postcss-value-parser": "^3.3.1"
+    "postcss-value-parser": "^4.1.0"
   },
   "devDependencies": {
     "benchmark": "2.1.4",
-    "chai": "2.2.0",
-    "eslint": "3.15.0",
-    "husky": "0.13.4",
-    "mocha": "3.2.0"
+    "chai": "4.3.4",
+    "eslint": "7.26.0",
+    "husky": "6.0.0",
+    "mocha": "8.4.0",
+    "postcss": "^8.2.15"
+  },
+  "peerDependencies": {
+    "postcss": "^8.2.15"
   },
   "scripts": {
     "test": "mocha",
